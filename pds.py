@@ -35,7 +35,7 @@ class DefaultDe(object):
 
     @staticmethod
     def i18n(text):
-        return 'i18nfrom Default:: %s', text
+        return 'i18nfrom Default:: %s' % text
 
 class Kde4(DefaultDe):
     Name                 = 'kde'
@@ -55,7 +55,7 @@ class Kde4(DefaultDe):
 class Kde3(DefaultDe):
     Name                 = 'kde'
     Version              = '3.5'
-    ConfigPath           = '$HOME/.kde4/'
+    ConfigPath           = '$HOME/.kde/'
     ConfigFile           = 'share/config/kdeglobals'
     ConfigType           = 'ini'
     ConfigBin            = 'kde-config'
