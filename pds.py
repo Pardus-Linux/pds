@@ -20,7 +20,7 @@ import piksemel
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
-class DefaultDe:
+class DefaultDe(object):
     Name                 = 'X11'
     Version              = None
     ConfigPath           = '$HOME/.config'
@@ -33,6 +33,10 @@ class DefaultDe:
     ExtraDirs            = None
     IconKey              = None
 
+    @staticmethod
+    def i18n(text):
+        return 'i18nfrom Default:: %s', text
+
 class Kde4(DefaultDe):
     Name                 = 'kde'
     Version              = '4'
@@ -44,12 +48,20 @@ class Kde4(DefaultDe):
     DefaultIconTheme     = 'oxygen'
     IconKey              = 'Icons/Theme'
 
-class Kde3(Kde4):
+    @staticmethod
+    def i18n(text):
+        return 'i18nfrom Kde 4:: %s' % text
+
+class Kde3(DefaultDe):
+    Name                 = 'kde'
     Version              = '3.5'
-    ConfigPath           = '$HOME/.kde3.5/'
+    ConfigPath           = '$HOME/.kde4/'
+    ConfigFile           = 'share/config/kdeglobals'
+    ConfigType           = 'ini'
     ConfigBin            = 'kde-config'
     DefaultIconFile      = '/usr/share/icons/default.kde'
     DefaultIconTheme     = 'crystalsvg'
+    IconKey              = 'Icons/Theme'
     ExtraDirs            = 'KDEDIRS'
 
 class Xfce(DefaultDe):
@@ -67,10 +79,21 @@ class Pds:
     SupportedDesktops = (DefaultDe, Kde4, Kde3, Xfce)
 
     def __init__(self):
-        self._session = None
-        self._version = None
-        self._config_content = None
-        self.home     = getenv('HOME').strip()
+        self._session           = None
+        self._version           = None
+        self.home               = getenv('HOME').strip()
+        self._config_content    = None
+        self._acceptedMethods   = filter(lambda x: not x.startswith('__'), 
+                                           dir(self.session))
+
+    def __getattr__(self, name):
+
+        for method in self._acceptedMethods:
+            if method == str(name):
+                return getattr(self.session, str(name))
+
+        if not self.__dict__.has_key(name):
+            raise AttributeError, name
 
     def settings(self, key, default):
         value = None
