@@ -9,6 +9,6 @@ b=Pds()
 
 print 'Current Desktop Environment         :', b.session.Name
 print 'Current Desktop Environment Version :', b.session.Version
-print 'I18n test result                    :',b.i18n('test')
-print 'It took                             :',time.time()-a
+print 'I18n test result                    :', b.i18n('Package Manager')
+print 'It took                             :', time.time()-a
 

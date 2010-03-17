@@ -14,7 +14,14 @@
 from os import path
 from os import getenv
 from os import popen
+
 import piksemel
+import gettext
+__trans = gettext.translation('package-manager', fallback=True)
+
+@staticmethod
+def zk(*text):
+    return __trans.ugettext(*text)
 
 # PyQt4 Core Libraries
 from PyQt4.QtCore import *
@@ -32,10 +39,7 @@ class DefaultDe(object):
     DefaultConfigPath    = None
     ExtraDirs            = None
     IconKey              = None
-
-    @staticmethod
-    def i18n(text):
-        return 'i18nfrom Default:: %s' % text
+    i18n                 = zk
 
 class Kde4(DefaultDe):
     Name                 = 'kde'
@@ -47,10 +51,7 @@ class Kde4(DefaultDe):
     DefaultIconFile      = '/usr/share/icons/default.kde4'
     DefaultIconTheme     = 'oxygen'
     IconKey              = 'Icons/Theme'
-
-    @staticmethod
-    def i18n(text):
-        return 'i18nfrom Kde 4:: %s' % text
+    i18n                 = zk
 
 class Kde3(DefaultDe):
     Name                 = 'kde'
@@ -84,7 +85,7 @@ class Pds:
         self.home               = getenv('HOME').strip()
         self._config_content    = None
         self._acceptedMethods   = filter(lambda x: not x.startswith('__'), 
-                                           dir(self.session))
+                                         dir(self.session))
 
     def __getattr__(self, name):
 
