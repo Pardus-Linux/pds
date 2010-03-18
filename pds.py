@@ -17,11 +17,7 @@ from os import popen
 
 import piksemel
 import gettext
-__trans = gettext.translation('package-manager', fallback=True)
-
-@staticmethod
-def zk(*text):
-    return __trans.ugettext(*text)
+__trans = None
 
 # PyQt4 Core Libraries
 from PyQt4.QtCore import *
@@ -39,7 +35,7 @@ class DefaultDe(object):
     DefaultConfigPath    = None
     ExtraDirs            = None
     IconKey              = None
-    i18n                 = zk
+    i18n                 = staticmethod(lambda x: x)
 
 class Kde4(DefaultDe):
     Name                 = 'kde'
@@ -51,7 +47,11 @@ class Kde4(DefaultDe):
     DefaultIconFile      = '/usr/share/icons/default.kde4'
     DefaultIconTheme     = 'oxygen'
     IconKey              = 'Icons/Theme'
-    i18n                 = zk
+    try:
+        from PyKDE4 import kdecore
+        i18n                 = kdecore.i18n
+    except:
+        pass
 
 class Kde3(DefaultDe):
     Name                 = 'kde'
@@ -79,11 +79,21 @@ class Pds:
 
     SupportedDesktops = (DefaultDe, Kde4, Kde3, Xfce)
 
-    def __init__(self):
+    def __init__(self, catalogName=None):
         self._session           = None
         self._version           = None
         self.home               = getenv('HOME').strip()
         self._config_content    = None
+
+        if catalogName:
+            __trans = gettext.translation(catalogName, fallback=True)
+
+            @staticmethod
+            def __i18n(*text):
+                return __trans.ugettext(*text)
+
+            DefaultDe.i18n = __i18n
+
         self._acceptedMethods   = filter(lambda x: not x.startswith('__'), 
                                          dir(self.session))
 

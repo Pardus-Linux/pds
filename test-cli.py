@@ -1,11 +1,11 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from pds import Pds
 import time
-
 a=time.time()
-b=Pds()
+from pds import Pds
+
+b=Pds('package-manager')
 
 print 'Current Desktop Environment         :', b.session.Name
 print 'Current Desktop Environment Version :', b.session.Version
