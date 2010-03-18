@@ -109,9 +109,18 @@ class Pds:
     def settings(self, key, default):
         value = None
         if self.session.ConfigType == 'ini':
-            settings = self.parse(self.config_file)
-            value = unicode(settings.value(key).toString())
+            # FIXME we dont need to force everytime.
+            settings = self.parse(self.config_file, force = True)
+            _value = settings.value(key)
+            if not _value.toString():
+                # Sometimes kdeglobals stores values without quotes
+                _value = _value.toStringList()
+                if _value:
+                    value = _value.join(',')
+            else:
+                value = unicode(_value.toString())
             if not value or value == '':
+                print 'Switching to alternate conf'
                 alternateConfig = self.session.DefaultConfigPath or \
                         path.join(self.install_prefix, self.session.ConfigFile)
                 settings = self.parse(alternateConfig, force = True)
