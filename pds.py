@@ -90,7 +90,12 @@ class Pds:
 
             @staticmethod
             def __i18n(*text):
-                return __trans.ugettext(*text)
+                if len(text) == 1:
+                    return __trans.ugettext(text[0])
+                ttt = unicode(__trans.ugettext(text[0]))
+                for i in range(1,len(text)):
+                    ttt = ttt.replace('%%%d' % i, unicode(text[i]))
+                return ttt
 
             DefaultDe.i18n = __i18n
 
@@ -350,6 +355,9 @@ class QIconLoader:
         if icon.isNull():
             return QPixmap()
         return icon.pixmap(QSize(size, size))
+
+    def icon(self, pix):
+        return QIcon(self.load(pix))
 
 def readfile(file_path, fallback=None):
     if path.exists(file_path):
