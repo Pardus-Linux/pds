@@ -356,8 +356,8 @@ class QIconLoader:
             return QPixmap()
         return icon.pixmap(QSize(size, size))
 
-    def icon(self, pix):
-        return QIcon(self.load(pix))
+    def icon(self, pix, size=128):
+        return QIcon(self.load(pix, size))
 
 def readfile(file_path, fallback=None):
     if path.exists(file_path):
