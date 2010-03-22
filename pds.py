@@ -317,10 +317,11 @@ class QIconLoader:
         return pixmap
 
     def findIcon(self, name = str, size = int):
-        pixmapName = ''.join(('$qt', str(name), str(size)))
+        for _name in name:
+            pixmapName = ''.join(('$qt', str(name), str(size)))
+            if (QPixmapCache.find(pixmapName, self.pixmap)):
+                return self.pixmap
         self._themes = []
-        if (QPixmapCache.find(pixmapName, self.pixmap)):
-            return self.pixmap;
         if not self.themeName == '':
             self._themes.append(self.themeName)
             for _name in name:
@@ -336,6 +337,7 @@ class QIconLoader:
                             self._themes[0] ,_name)
                     if not self.pixmap.isNull():
                         break
+        pixmapName = ''.join(('$qt', str(_name), str(size)))
         if not self.pixmap.isNull():
             QPixmapCache.insert(pixmapName, self.pixmap)
         return self.pixmap
