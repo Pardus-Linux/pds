@@ -92,7 +92,7 @@ class Pds:
         if debug:
             logging.basicConfig(filename = _log_file, level = logging.DEBUG)
         else:
-            logging.basicConfig(logging.NOTSET)
+            logging.basicConfig(level = logging.NOTSET)
 
         if catalogName:
             __trans = gettext.translation(catalogName, fallback=True)
