@@ -14,6 +14,7 @@
 from os import path
 from os import getenv
 from os import popen
+from glob import glob
 
 import piksemel
 import gettext
@@ -267,6 +268,7 @@ class QIconLoader:
                     dataDirs.split(':')))
         self.iconDirs = list(set(self.iconDirs))
         self.themeIndex = self.readThemeIndex(self.themeName)
+        self._available_icons = self.__get_icons()
 
     def readThemeIndex(self, themeName):
 
@@ -289,6 +291,21 @@ class QIconLoader:
                 parents = indexReader.value('Icon Theme/Inherits').toStringList()
                 break
         return QIconTheme(dirList, parents)
+
+    def __get_icons(self, themeName = ''):
+        if themeName == '':
+            themeName = self.themeName
+        if themeName == self.themeName:
+            index = self.themeIndex
+        else:
+            index = self.readThemeIndex(themeName)
+        icons = []
+        for iconDir in self.iconDirs:
+            if path.exists(path.join(iconDir, themeName)):
+                for theme in index.dirList:
+                    icons.extend(glob(path.join(iconDir, themeName, theme[1],'*.png')))
+        _icons = list(set(icons))
+        return map(lambda a: a.split('/')[-1].rstrip('.png'), _icons)
 
     def findIconHelper(self, size = int, themeName = str, iconName = str):
         pixmap = QPixmap()
@@ -326,6 +343,7 @@ class QIconLoader:
         for _name in name:
             pixmapName = ''.join(('$qt', str(_name), str(size)))
             if (QPixmapCache.find(pixmapName, self.pixmap)):
+                logging.debug('Icon %s returned from cache' % _name)
                 return self.pixmap
         self._themes = []
         if self.themeName:
@@ -354,6 +372,7 @@ class QIconLoader:
         self.pixmap = QPixmap()
         if not type(name) in (list, tuple):
             name = [str(name)]
+        logging.info('Getting icon : %s' % '-'.join(name))
         for _size in self.iconSizes:
             pix = self.findIcon(name, _size)
             if not pix.isNull():
