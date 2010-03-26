@@ -267,6 +267,7 @@ class QIconLoader:
                 map(lambda x: path.join(unicode(x), 'icons'), 
                     dataDirs.split(':')))
         self.iconDirs = list(set(self.iconDirs))
+        logging.debug('Icon Dirs : %s' % ','.join(self.iconDirs))
         self.themeIndex = self.readThemeIndex(self.themeName)
         self._available_icons = self.__get_icons()
 
@@ -299,11 +300,16 @@ class QIconLoader:
             index = self.themeIndex
         else:
             index = self.readThemeIndex(themeName)
+
+        themes = [themeName]
+        themes.extend(index.parents)
+        logging.debug('Themes : %s ' % ','.join(themes))
         icons = []
         for iconDir in self.iconDirs:
-            if path.exists(path.join(iconDir, themeName)):
-                for theme in index.dirList:
-                    icons.extend(glob(path.join(iconDir, themeName, theme[1],'*.png')))
+            for theme in themes:
+                if path.exists(path.join(iconDir, theme)):
+                    for _path in index.dirList:
+                        icons.extend(glob(path.join(iconDir, theme, _path[1],'*.png')))
         _icons = list(set(icons))
         return map(lambda a: a.split('/')[-1].rstrip('.png'), _icons)
 
