@@ -42,7 +42,9 @@ class Ui_Test(object):
         self.gridLayout.addWidget(self.label, 1, 0, 1, 3)
         self.getButton.clicked.connect(self.showIcon)
         QtCore.QMetaObject.connectSlotsByName(Test)
-        self.loader = pds.QIconLoader(debug = False)
+        self.loader = pds.QIconLoader()
+        self.getButton.setAutoDefault(True)
+        self.getButton.setDefault(True)
 
         print "Desktop Session : ", self.loader.pds.session.Name
         print "Desktop Version : ", self.loader.pds.session.Version

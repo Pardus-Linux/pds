@@ -369,25 +369,37 @@ class QIconLoader:
                         break
         pixmapName = ''.join(('$qt', str(_name), str(size)))
         if not self.pixmap.isNull():
+            logging.debug('Icon cached with name: %s ' % pixmapName)
             QPixmapCache.insert(pixmapName, self.pixmap)
         return self.pixmap
 
-    def load(self, name, size = 128):
+    def load(self, name, size = 128, forceCache = False):
         icon = QIcon()
         size = int(size)
         self.pixmap = QPixmap()
         if not type(name) in (list, tuple):
             name = [str(name)]
-        logging.info('Getting icon : %s' % '-'.join(name))
-        for _size in self.iconSizes:
-            pix = self.findIcon(name, _size)
-            if not pix.isNull():
-                if size == _size:
-                    return pix
-                icon.addPixmap(pix)
-        if icon.isNull():
-            return self.pixmap
-        return icon.pixmap(QSize(size, size))
+
+        if forceCache:
+            for _name in name:
+                for _size in self.iconSizes:
+                    if (QPixmapCache.find('$qt'+str(_name)+str(_size), self.pixmap)):
+                        logging.debug('Icon %s returned from cache' % _name)
+                        return self.pixmap
+
+        logging.info('Getting icon : %s size: %s' % ('-'.join(name), size))
+        pix = self.findIcon(name, size)
+        if pix.isNull():
+            for _size in self.iconSizes:
+                pix = self.findIcon(name, _size)
+                if not pix.isNull():
+                    if size == _size:
+                        return pix
+                    icon.addPixmap(pix)
+            if icon.isNull():
+                return self.pixmap
+            return icon.pixmap(QSize(size, size))
+        return pix
 
     def icon(self, pix, size=128):
         return QIcon(self.load(pix, size))
