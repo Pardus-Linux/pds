@@ -93,7 +93,7 @@ class Pds:
         if debug:
             logging.basicConfig(filename = _log_file, level = logging.DEBUG)
         else:
-            logging.basicConfig(level = logging.NOTSET)
+            logging.basicConfig(level = logging.INFO)
 
         if catalogName:
             __trans = gettext.translation(catalogName, fallback=True)
@@ -135,7 +135,7 @@ class Pds:
             else:
                 value = unicode(_value.toString())
             if not value or value == '':
-                logging.info('Switching to default conf')
+                logging.debug('Switching to default conf')
                 alternateConfig = self.session.DefaultConfigPath or \
                         path.join(self.install_prefix, self.session.ConfigFile)
                 settings = self.parse(alternateConfig, force = True)
@@ -387,7 +387,7 @@ class QIconLoader:
                         logging.debug('Icon %s returned from cache' % _name)
                         return self.pixmap
 
-        logging.info('Getting icon : %s size: %s' % ('-'.join(name), size))
+        logging.debug('Getting icon : %s size: %s' % ('-'.join(name), size))
         pix = self.findIcon(name, size)
         if pix.isNull():
             for _size in self.iconSizes:
