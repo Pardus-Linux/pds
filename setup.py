@@ -51,7 +51,6 @@ setup(name=PROJECT,
       author_email='gokmen@pardus.org.tr',
       url='http://developer.pardus.org.tr',
       packages=[PROJECT],
-      scripts=[PROJECT],
       data_files = [(plp(), ['AUTHORS', 'README', 'COPYING', 'HELP'])],
       cmdclass = {
           'uninstall':Uninstall,
