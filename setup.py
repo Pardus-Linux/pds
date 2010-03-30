@@ -28,6 +28,11 @@ class Clean(clean):
                 shutil.rmtree(dirs)
         clean.run(self)
 
+class Dist(sdist):
+    def run(self):
+        os.system('python setup.py build')
+        sdist.run(self)
+
 class Uninstall(Command):
     user_options = []
     def initialize_options(self):

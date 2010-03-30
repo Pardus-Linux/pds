@@ -1,0 +1,7 @@
+README
+HELP
+COPYING
+AUTHORS
+pds/__init__.py
+pds/test-cli.py
+pds/test-pds.py
