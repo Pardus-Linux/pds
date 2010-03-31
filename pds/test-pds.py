@@ -22,20 +22,23 @@ class Ui_Test(object):
         Test.resize(460, 300)
         self.gridLayout = QtGui.QGridLayout(Test)
         self.gridLayout.setObjectName("gridLayout")
-        self.name = QtGui.QLineEdit(Test)
+        self.name = QtGui.QComboBox(Test)
         self.name.setObjectName("name")
+        self.name.setEditable(True)
         self.gridLayout.addWidget(self.name, 0, 0, 1, 1)
         self.size = QtGui.QComboBox(Test)
         self.size.setObjectName("size")
-        self.size.addItem("16")
-        self.size.addItem("22")
-        self.size.addItem("32")
-        self.size.addItem("48")
-        self.size.addItem("64")
+        self.size.setMaximumSize(QtCore.QSize(100, 16777215))
         self.size.addItem("128")
+        self.size.addItem("64")
+        self.size.addItem("48")
+        self.size.addItem("32")
+        self.size.addItem("22")
+        self.size.addItem("16")
         self.gridLayout.addWidget(self.size, 0, 1, 1, 1)
         self.getButton = QtGui.QPushButton(Test)
         self.getButton.setText("Get Icon")
+        self.getButton.setMaximumSize(QtCore.QSize(100, 16777215))
         self.gridLayout.addWidget(self.getButton, 0, 2, 1, 1)
         self.label = QtGui.QLabel(Test)
         self.label.setObjectName("label")
@@ -43,8 +46,9 @@ class Ui_Test(object):
         self.getButton.clicked.connect(self.showIcon)
         QtCore.QMetaObject.connectSlotsByName(Test)
         self.loader = pds.QIconLoader()
-        self.getButton.setAutoDefault(True)
-        self.getButton.setDefault(True)
+        completer = QtGui.QCompleter(self.loader._available_icons)
+        self.name.setCompleter(completer)
+        self.getButton.setShortcut("Return")
 
         print "Desktop Session : ", self.loader.pds.session.Name
         print "Desktop Version : ", self.loader.pds.session.Version
@@ -53,7 +57,7 @@ class Ui_Test(object):
     def showIcon(self):
         a = time()
         print "Clicked !"
-        icons = unicode(self.name.text())
+        icons = unicode(self.name.currentText())
         self.label.setPixmap(self.loader.load(icons.split(','), self.size.currentText()))
         print 'It took : ', time() - a
 

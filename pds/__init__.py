@@ -310,8 +310,8 @@ class QIconLoader:
                 if path.exists(path.join(iconDir, theme)):
                     for _path in index.dirList:
                         icons.extend(glob(path.join(iconDir, theme, _path[1],'*.png')))
-        _icons = list(set(icons))
-        return map(lambda a: a.split('/')[-1].rstrip('.png'), _icons)
+        _icons = map(lambda a: a.split('/')[-1][:-4], icons)
+        return list(set(_icons))
 
     def findIconHelper(self, size = int, themeName = str, iconName = str):
         pixmap = QPixmap()
