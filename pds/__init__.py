@@ -239,7 +239,7 @@ class QIconLoader:
         # Get possible Data Directories
         dataDirs = QFile.decodeName(getenv('XDG_DATA_DIRS'))
         if dataDirs.isEmpty():
-            dataDirs = '/usr/local/share/:/usr/share/'
+            dataDirs = QString('/usr/local/share/:/usr/share/')
 
         dataDirs += ':' + self.pds.config_path + 'share'
         dataDirs.prepend(QDir.homePath() + ":")
