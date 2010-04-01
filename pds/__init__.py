@@ -89,9 +89,9 @@ class Pds:
         self.home               = getenv('HOME').strip()
         self._config_content    = None
 
-        _log_file = path.join(self.home, '.%s-pds.log' % catalogName)
+        _log_file = path.join(self.home, '.%s-pds.log' % catalogName or 'default')
         if debug:
-            logging.basicConfig(filename = _log_file, level = logging.DEBUG)
+            logging.basicConfig(filename = _log_file, level = logging.DEBUG, filemode = 'w')
         else:
             logging.basicConfig(level = logging.INFO)
 
