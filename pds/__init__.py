@@ -360,8 +360,8 @@ class QIconLoader:
                 if not self.pixmap.isNull():
                     break
         if self.pixmap.isNull():
-            self._themes.extend(self.themeIndex.parents)
             for _name in name:
+                self._themes.extend(self.themeIndex.parents)
                 if len(self._themes) > 0:
                     self.pixmap = self.findIconHelper(int(size), 
                             self._themes[0] ,_name)
@@ -379,7 +379,6 @@ class QIconLoader:
         self.pixmap = QPixmap()
         if not type(name) in (list, tuple):
             name = [str(name)]
-
         if forceCache:
             for _name in name:
                 for _size in self.iconSizes:
@@ -387,7 +386,7 @@ class QIconLoader:
                         logging.debug('Icon %s returned from cache' % _name)
                         return self.pixmap
 
-        logging.debug('Getting icon : %s size: %s' % ('-'.join(name), size))
+        logging.debug('Getting icon : %s size: %s' % (','.join(name), size))
         pix = self.findIcon(name, size)
         if pix.isNull():
             for _size in self.iconSizes:
