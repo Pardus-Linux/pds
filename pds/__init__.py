@@ -21,6 +21,7 @@ import gettext
 __trans = None
 
 import sys
+import signal
 
 # PyQt4 Core Libraries
 from PyQt4.QtCore import *
@@ -414,7 +415,6 @@ class QUniqueApplication(QApplication):
         QApplication.__init__(self, argv)
         self.control = QtNetwork.QTcpServer(self)
         self.control.newConnection.connect(self.onControlConnect)
-
         self.mainwindow = None
         self.port = port
         self.readyToRun = self.control.listen(QUniqueApplication.ADDR, port)
@@ -431,6 +431,8 @@ class QUniqueApplication(QApplication):
 
     def exec_(self):
         if self.readyToRun:
+            # Let Ctrl+C works ;)
+            signal.signal(signal.SIGINT, signal.SIG_DFL)
             QApplication.exec_()
 
     def sendToInstance(self, data = ''):
