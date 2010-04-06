@@ -20,9 +20,12 @@ import piksemel
 import gettext
 __trans = None
 
+import sys
+
 # PyQt4 Core Libraries
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+from PyQt4 import QtNetwork
 
 # Logging
 import logging
@@ -403,7 +406,63 @@ class QIconLoader:
     def icon(self, pix, size=128):
         return QIcon(self.load(pix, size))
 
+class QUniqueApplication(QApplication):
+
+    ADDR = QtNetwork.QHostAddress(QtNetwork.QHostAddress.LocalHost)
+
+    def __init__(self, argv, port = 0):
+        QApplication.__init__(self, argv)
+        self.control = QtNetwork.QTcpServer(self)
+        self.control.newConnection.connect(self.onControlConnect)
+
+        self.mainwindow = None
+        self.port = port
+        self.readyToRun = self.control.listen(QUniqueApplication.ADDR, port)
+
+        if self.readyToRun:
+            self.port = self.control.serverPort()
+
+        if not self.readyToRun:
+            self.sendToInstance('show-mainwindow')
+            sys.exit()
+
+    def setMainWindow(self, window):
+        self.mainwindow = window
+
+    def exec_(self):
+        if self.readyToRun:
+            QApplication.exec_()
+
+    def sendToInstance(self, data = ''):
+        socket = QtNetwork.QTcpSocket()
+        socket.connectToHost(QUniqueApplication.ADDR, self.port)
+        if socket.waitForConnected( 500 ):
+            if len(data) > 0:
+                socket.write(data)
+                socket.flush()
+            socket.close()
+            return True
+        return False
+
+    def onControlConnect(self):
+        self.socket = self.control.nextPendingConnection()
+        self.socket.readyRead.connect(self.onControlRequest)
+
+    def onControlRequest(self):
+        request = self.socket.readAll()
+        for cmd in request.split(' '):
+            self.parseCommand(cmd)
+        self.socket.flush()
+        self.socket.close()
+        self.socket.deleteLater()
+
+    def parseCommand(self, cmd):
+        if cmd == 'show-mainwindow':
+            if hasattr(self.mainwindow, 'show'):
+                self.mainwindow.show()
+
 def readfile(file_path, fallback=None):
     if path.exists(file_path):
         return open(file_path).read()
     return fallback
+
