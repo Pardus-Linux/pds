@@ -409,22 +409,21 @@ class QIconLoader:
 
 class QUniqueApplication(QApplication):
 
-    ADDR = QtNetwork.QHostAddress(QtNetwork.QHostAddress.LocalHost)
-
-    def __init__(self, argv, port = 0):
+    def __init__(self, argv, catalog):
         QApplication.__init__(self, argv)
-        self.control = QtNetwork.QTcpServer(self)
+        self.aboutToQuit.connect(self.cleanup)
+        self.control = QtNetwork.QLocalServer(self)
         self.control.newConnection.connect(self.onControlConnect)
         self.mainwindow = None
-        self.port = port
-        self.readyToRun = self.control.listen(QUniqueApplication.ADDR, port)
-
-        if self.readyToRun:
-            self.port = self.control.serverPort()
+        self.catalog = '%s-pds.socket' % catalog
+        self.readyToRun = self.control.listen(self.catalog)
 
         if not self.readyToRun:
-            self.sendToInstance('show-mainwindow')
-            sys.exit()
+            if self.sendToInstance('show-mainwindow'):
+                sys.exit()
+            else:
+                self.control.removeServer(self.catalog)
+                self.readyToRun = self.control.listen(self.catalog)
 
     def setMainWindow(self, window):
         self.mainwindow = window
@@ -435,9 +434,12 @@ class QUniqueApplication(QApplication):
             signal.signal(signal.SIGINT, signal.SIG_DFL)
             QApplication.exec_()
 
+    def cleanup(self):
+        self.control.removeServer(self.catalog)
+
     def sendToInstance(self, data = ''):
-        socket = QtNetwork.QTcpSocket()
-        socket.connectToHost(QUniqueApplication.ADDR, self.port)
+        socket = QtNetwork.QLocalSocket()
+        socket.connectToServer(self.catalog, QIODevice.WriteOnly)
         if socket.waitForConnected( 500 ):
             if len(data) > 0:
                 socket.write(data)

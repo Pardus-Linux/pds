@@ -4,7 +4,7 @@
 from pds import *
 import sys
 
-app = QUniqueApplication(sys.argv, port = 2322)
+app = QUniqueApplication(sys.argv, catalog = 'test-app')
 if app.readyToRun:
     print 'Application started !'
 app.exec_()
