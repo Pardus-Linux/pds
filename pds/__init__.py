@@ -431,7 +431,7 @@ class QUniqueApplication(QApplication):
 
     def exec_(self):
         if self.readyToRun:
-            # Let Ctrl+C works ;)
+            # Let Ctrl+C work ;)
             signal.signal(signal.SIGINT, signal.SIG_DFL)
             QApplication.exec_()
 
