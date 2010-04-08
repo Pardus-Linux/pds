@@ -116,6 +116,9 @@ class Pds:
         self._acceptedMethods   = filter(lambda x: not x.startswith('__'), 
                                          dir(self.session))
 
+        self.notifierInitialized = False
+        self.catalogName = catalogName
+
     def __getattr__(self, name):
 
         for method in self._acceptedMethods:
@@ -124,6 +127,18 @@ class Pds:
 
         if not self.__dict__.has_key(name):
             raise AttributeError, name
+
+    def notify(self, title, message, icon = None):
+        try:
+            import pynotify
+            if not self.notifierInitialized:
+                pynotify.init(self.catalogName)
+                self.notifierInitialized = True
+            notifier = pynotify.Notification(title, message, icon or self.catalogName)
+            notifier.show()
+        except ImportError:
+            #logging.info(message)
+            print message
 
     def settings(self, key, default):
         value = None
