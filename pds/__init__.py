@@ -273,6 +273,7 @@ class QIconLoader:
         self.iconDirs = list(set(self.iconDirs))
         logging.debug('Icon Dirs : %s' % ','.join(self.iconDirs))
         self.themeIndex = self.readThemeIndex(self.themeName)
+        self.extraIcons = ['/usr/share/pixmaps']
         self._available_icons = self.__get_icons()
 
     def readThemeIndex(self, themeName):
@@ -314,6 +315,11 @@ class QIconLoader:
                 if path.exists(path.join(iconDir, theme)):
                     for _path in index.dirList:
                         icons.extend(glob(path.join(iconDir, theme, _path[1],'*.png')))
+
+        for iconDir in self.extraIcons:
+            if path.exists(iconDir):
+                icons.extend(glob(path.join(iconDir, '*.png')))
+
         _icons = map(lambda a: a.split('/')[-1][:-4], icons)
         return list(set(_icons))
 
@@ -343,6 +349,14 @@ class QIconLoader:
                         logging.debug('Icon: %s found in theme %s' % \
                                 (iconName, themeName))
                         return pixmap
+
+        for iconDir in self.extraIcons:
+            fileName = path.join(iconDir, '%s.png' % str(iconName))
+            if path.exists(fileName):
+                pixmap.load(fileName)
+                logging.debug('Icon: %s found in %s' % (iconName, iconDir))
+                return pixmap
+
         if len(self._themes) > 0:
             self._themes.pop(0)
             if not len(self._themes) == 0 and pixmap.isNull():
