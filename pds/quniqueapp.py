@@ -10,22 +10,12 @@
 # Software Foundation; either version 2 of the License, or (at your option)
 # any later version.
 
-# Pardus Desktop Services
-from os import path
-from os import getenv
-from os import popen
-from glob import glob
-
-import piksemel
-import gettext
-__trans = None
-
 import sys
 import signal
 
 # PyQt4 Core Libraries
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt4.QtCore import QIODevice
+from PyQt4.QtGui import QApplication
 from PyQt4 import QtNetwork
 
 class QUniqueApplication(QApplication):
@@ -85,5 +75,4 @@ class QUniqueApplication(QApplication):
         if cmd == 'show-mainwindow':
             if hasattr(self.mainwindow, 'show'):
                 self.mainwindow.show()
-
 

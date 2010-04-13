@@ -14,19 +14,13 @@
 from os import path
 from os import getenv
 from os import popen
-from glob import glob
 
 import piksemel
 import gettext
 __trans = None
 
-import sys
-import signal
-
 # PyQt4 Core Libraries
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-from PyQt4 import QtNetwork
+from PyQt4.QtCore import QSettings
 
 # Logging
 import logging
@@ -88,8 +82,7 @@ class Pds:
             notifier = pynotify.Notification(title, message, icon or self.catalogName)
             notifier.show()
         except ImportError:
-            #logging.info(message)
-            print message
+            logging.info(message)
 
     def settings(self, key, default):
         value = None

@@ -13,12 +13,11 @@
 # Pardus Desktop Services
 from os import path
 from os import getenv
-from os import popen
 from glob import glob
 
 # PyQt4 Core Libraries
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt4.QtCore import QFile, QFileInfo, QString, QDir, QSize, QSettings
+from PyQt4.QtGui import QPixmap, QPixmapCache, QIcon
 from PyQt4 import QtNetwork
 
 # Logging
