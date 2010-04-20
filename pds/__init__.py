@@ -17,7 +17,6 @@ from os import popen
 
 import piksemel
 import gettext
-__trans = None
 
 # PyQt4 Core Libraries
 from PyQt4.QtCore import QSettings
@@ -45,13 +44,13 @@ class Pds:
             logging.basicConfig(level = logging.INFO)
 
         if catalogName:
-            __trans = gettext.translation(catalogName, fallback=True)
+            self.__trans = gettext.translation(catalogName, fallback=True)
 
             @staticmethod
             def __i18n(*text):
                 if len(text) == 1:
-                    return __trans.ugettext(text[0])
-                ttt = unicode(__trans.ugettext(text[0]))
+                    return self.__trans.ugettext(text[0])
+                ttt = unicode(self.__trans.ugettext(text[0]))
                 for i in range(1,len(text)):
                     ttt = ttt.replace('%%%d' % i, unicode(text[i]))
                 return ttt
@@ -72,6 +71,10 @@ class Pds:
 
         if not self.__dict__.has_key(name):
             raise AttributeError, name
+
+    def updatei18n(self, lang):
+        if self.catalogName:
+            self.__trans = gettext.translation(self.catalogName, languages=[lang], fallback=True)
 
     def notify(self, title, message, icon = None):
         try:
