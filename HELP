@@ -29,4 +29,5 @@ You can use following test scripts from $PYTHON_DIR/site-packages/pds/
 
  - test-pds.py (For GUI Test, requires PyQt)
  - test-cli.py (To get environment information)
+ - test-qapp.py (For testing QUniqueApplication)
 

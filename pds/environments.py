@@ -10,8 +10,6 @@
 # Software Foundation; either version 2 of the License, or (at your option)
 # any later version.
 
-PMessageBox = ''
-
 class DefaultDe(object):
     Name                 = 'X11'
     Version              = None
@@ -25,7 +23,6 @@ class DefaultDe(object):
     ExtraDirs            = None
     IconKey              = None
     i18n                 = staticmethod(lambda x: x)
-    MessageBox           = PMessageBox
 
 class Kde4(DefaultDe):
     Name                 = 'kde'
@@ -40,7 +37,6 @@ class Kde4(DefaultDe):
     try:
         from PyKDE4 import kdecore, kdeui
         i18n                 = kdecore.i18n
-        MessageBox           = kdeui.KMessageBox
     except:
         pass
 
@@ -65,5 +61,4 @@ class Xfce(DefaultDe):
     DefaultIconTheme     = 'hicolor'
     DefaultConfigPath    = '/etc/xdg/xfce4/%s' % ConfigFile
     IconKey              = 'IconThemeName'
-
 

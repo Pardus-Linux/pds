@@ -61,7 +61,8 @@ class QIconLoader:
         dataDirs.prepend(QDir.homePath() + ":")
 
         if self.pds.session.ExtraDirs:
-            dirs = QFile.decodeName(getenv(self.pds.session.ExtraDirs)).split(':')
+            dirs = QFile.decodeName(
+                    getenv(self.pds.session.ExtraDirs)).split(':')
             for dirName in dirs:
                 dataDirs.append(':' + dirName + '/share')
 
@@ -106,7 +107,8 @@ class QIconLoader:
                         size = indexReader.value(key).toInt()
                         dirList.append((size[0], 
                             unicode(key.left(key.size() - 5))))
-                parents = indexReader.value('Icon Theme/Inherits').toStringList()
+                parents = indexReader.value('Icon Theme/Inherits')
+                parents = parents.toStringList()
                 break
         return QIconTheme(dirList, parents)
 
@@ -122,11 +124,13 @@ class QIconLoader:
         themes.extend(index.parents)
         logging.debug('Themes : %s ' % ','.join(themes))
         icons = []
+
         for iconDir in self.iconDirs:
             for theme in themes:
                 if path.exists(path.join(iconDir, theme)):
                     for _path in index.dirList:
-                        icons.extend(glob(path.join(iconDir, theme, _path[1],'*.png')))
+                        icons.extend(glob(path.join(iconDir, theme, 
+                            _path[1],'*.png')))
 
         for iconDir in self.extraIcons:
             if path.exists(iconDir):
@@ -212,7 +216,8 @@ class QIconLoader:
         if forceCache:
             for _name in name:
                 for _size in self.iconSizes:
-                    if (QPixmapCache.find('$qt'+str(_name)+str(_size), self.pixmap)):
+                    if (QPixmapCache.find('$qt'+str(_name)+str(_size), 
+                        self.pixmap)):
                         logging.debug('Icon %s returned from cache' % _name)
                         return self.pixmap
 
@@ -232,5 +237,4 @@ class QIconLoader:
 
     def icon(self, pix, size=128):
         return QIcon(self.load(pix, size))
-
 

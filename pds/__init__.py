@@ -39,7 +39,8 @@ class Pds:
 
         _log_file = path.join(self.home, '.pdsLogfor%s.log' % catalogName)
         if debug:
-            logging.basicConfig(filename = _log_file, level = logging.DEBUG, filemode = 'w')
+            logging.basicConfig(filename = _log_file, level = logging.DEBUG, \
+                    filemode = 'w')
         else:
             logging.basicConfig(level = logging.INFO)
 
@@ -74,7 +75,8 @@ class Pds:
 
     def updatei18n(self, lang):
         if self.catalogName:
-            self.__trans = gettext.translation(self.catalogName, languages=[lang], fallback=True)
+            self.__trans = gettext.translation(self.catalogName, \
+                    languages=[lang], fallback=True)
 
     def notify(self, title, message, icon = None):
         try:
@@ -82,7 +84,8 @@ class Pds:
             if not self.notifierInitialized:
                 pynotify.init(self.catalogName)
                 self.notifierInitialized = True
-            notifier = pynotify.Notification(title, message, icon or self.catalogName)
+            notifier = pynotify.Notification(title, message, \
+                    icon or self.catalogName)
             notifier.show()
         except ImportError:
             logging.info(message)

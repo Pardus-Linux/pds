@@ -2,6 +2,7 @@ README
 HELP
 COPYING
 AUTHORS
+setup.py
 pds/__init__.py
 pds/environments.py
 pds/qiconloader.py

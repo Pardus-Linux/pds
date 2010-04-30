@@ -59,7 +59,8 @@ class Ui_Test(object):
         a = time()
         print "Clicked !"
         icons = unicode(self.name.currentText())
-        self.label.setPixmap(self.loader.load(icons.split(','), self.size.currentText()))
+        self.label.setPixmap(self.loader.load(icons.split(','), 
+            self.size.currentText()))
         print 'It took : ', time() - a
 
 if __name__ == "__main__":

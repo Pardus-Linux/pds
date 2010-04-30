@@ -10,4 +10,11 @@ It supports following Desktop Environments:
 - Kde 3.5
 - Xfce 4
 
-It requires Qt nad PyQt as well.
+Following dependencies must be installed:
+
+- Python 2.6>
+- Qt
+- PyQt
+- piksemel
+- gettext
+
