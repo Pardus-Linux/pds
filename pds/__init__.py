@@ -47,7 +47,6 @@ class Pds:
         if catalogName:
             self.__trans = gettext.translation(catalogName, fallback=True)
 
-            @staticmethod
             def __i18n(*text):
                 if len(text) == 1:
                     return self.__trans.ugettext(text[0])
@@ -56,19 +55,20 @@ class Pds:
                     ttt = ttt.replace('%%%d' % i, unicode(text[i]))
                 return ttt
 
-            DefaultDe.i18n = __i18n
+            self.i18n = __i18n
+            DefaultDe.i18n = staticmethod(__i18n)
 
-        self._acceptedMethods   = filter(lambda x: not x.startswith('__'), 
-                                         dir(self.session))
+        self._acceptedMethods = filter(lambda x: not x.startswith('__') or \
+                                                 not x == 'i18n',
+                                                 dir(self.session))
 
         self.notifierInitialized = False
         self.catalogName = catalogName
 
     def __getattr__(self, name):
 
-        for method in self._acceptedMethods:
-            if method == str(name):
-                return getattr(self.session, str(name))
+        if str(name) in self._acceptedMethods:
+            return getattr(self.session, str(name))
 
         if not self.__dict__.has_key(name):
             raise AttributeError, name
