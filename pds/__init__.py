@@ -84,7 +84,7 @@ class Pds:
             if not self.notifierInitialized:
                 pynotify.init(self.catalogName)
                 self.notifierInitialized = True
-            notifier = pynotify.Notification(title, message, \
+            notifier = pynotify.Notification(unicode(title), unicode(message),\
                     icon or self.catalogName)
             notifier.show()
         except ImportError:
