@@ -4,6 +4,7 @@
 # Pardus Desktop Services
 # Copyright (C) 2010, TUBITAK/UEKAE
 # 2010 - Gökmen Göksel <gokmen:pardus.org.tr>
+# 2010 - H. İbrahim Güngör <ibrahim:pardus.org.tr>
 
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free
@@ -61,4 +62,13 @@ class Xfce(DefaultDe):
     DefaultIconTheme     = 'hicolor'
     DefaultConfigPath    = '/etc/xdg/xfce4/%s' % ConfigFile
     IconKey              = 'IconThemeName'
+
+class Enlightenment(DefaultDe):
+    Name                 = 'enlightenment'
+    Version              = '0.17'
+    ConfigPath           = '$HOME/.e/e/'
+    ConfigFile           = 'config/standard/e.cfg'
+    ConfigType           = 'env'
+    DefaultIconTheme     = 'hicolor'
+    IconKey              = 'ICON_THEME'
 

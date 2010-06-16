@@ -4,6 +4,7 @@
 # Pardus Desktop Services
 # Copyright (C) 2010, TUBITAK/UEKAE
 # 2010 - Gökmen Göksel <gokmen:pardus.org.tr>
+# 2010 - H. İbrahim Güngör <ibrahim:pardus.org.tr>
 
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free
@@ -29,7 +30,7 @@ from pds.environments import *
 
 class Pds:
 
-    SupportedDesktops = (DefaultDe, Kde4, Kde3, Xfce)
+    SupportedDesktops = (DefaultDe, Kde4, Kde3, Xfce, Enlightenment)
 
     def __init__(self, catalogName='', debug=False):
         self._session           = None
@@ -123,6 +124,9 @@ class Pds:
                 settings = self.parse(alternateConfig, 'xml',
                         force = True).getTag('property')
                 value = getval(settings, key)
+
+        elif self.session.ConfigType == 'env':
+            value = getenv(key)
 
         return value or default
 
