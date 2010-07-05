@@ -143,7 +143,7 @@ class Pds:
     def session(self):
         if not self._session:
             env = getenv('DESKTOP_SESSION')
-            if env == 'default':
+            if env in ('default', None):
                 session = readfile('/etc/default/desktop', DefaultDe.Name)
                 env     = session.split('=')[1].strip()
             for de in Pds.SupportedDesktops:
