@@ -14,6 +14,7 @@
 class DefaultDe(object):
     Name                 = 'X11'
     Version              = None
+    VersionKey           = None
     ConfigPath           = '$HOME/.config'
     ConfigFile           = None
     ConfigType           = None
@@ -28,6 +29,7 @@ class DefaultDe(object):
 class Kde4(DefaultDe):
     Name                 = 'kde'
     Version              = '4'
+    VersionKey           = 'KDE_SESSION_VERSION'
     ConfigPath           = '$HOME/.kde4/'
     ConfigFile           = 'share/config/kdeglobals'
     ConfigType           = 'ini'
