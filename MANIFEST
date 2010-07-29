@@ -7,6 +7,8 @@ pds/__init__.py
 pds/environments.py
 pds/qiconloader.py
 pds/quniqueapp.py
+pds/gui.py
 pds/test-cli.py
 pds/test-pds.py
 pds/test-qapp.py
+pds/test-gui.py

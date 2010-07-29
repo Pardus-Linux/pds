@@ -1,46 +1,53 @@
-#!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-# Pardus Desktop Services
-# GUI Test Script ~ test-gui.py
+# Form implementation generated from reading ui file 'test.ui'
+#
+# Created: Thu Jul 29 16:37:50 2010
+#      by: PyQt4 UI code generator 4.7.3
+#
+# WARNING! All changes made in this file will be lost!
 
-# Copyright (C) 2010, TUBITAK/UEKAE
-# 2010 - Gökmen Göksel <gokmen:pardus.org.tr>
-
-# This program is free software; you can redistribute it and/or modify it under
-# the terms of the GNU General Public License as published by the Free
-# Software Foundation; either version 2 of the License, or (at your option)
-# any later version.
-
-from PyQt4 import QtGui
-from PyQt4 import QtCore
+from PyQt4 import QtCore, QtGui
+from pds.gui import PMessageBox
 
 class Ui_Form(object):
     def setupUi(self, Form):
-        Form.resize(516, 364)
+        Form.setObjectName("Form")
+        Form.resize(743, 487)
         self.gridLayout = QtGui.QGridLayout(Form)
-        spacerItem = QtGui.QSpacerItem(20, 276, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
+        self.gridLayout.setObjectName("gridLayout")
+        self.line = QtGui.QLineEdit(Form)
+        self.line.setObjectName("line")
+        self.gridLayout.addWidget(self.line, 0, 0, 1, 1)
+        spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.gridLayout.addItem(spacerItem, 0, 1, 1, 1)
-        spacerItem1 = QtGui.QSpacerItem(217, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.gridLayout.addItem(spacerItem1, 1, 0, 1, 1)
         self.button = QtGui.QPushButton(Form)
-        self.button.setText('Click')
-        self.gridLayout.addWidget(self.button, 1, 1, 1, 1)
-        spacerItem2 = QtGui.QSpacerItem(217, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.gridLayout.addItem(spacerItem2, 1, 2, 1, 1)
-        spacerItem3 = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
-        self.gridLayout.addItem(spacerItem3, 2, 1, 1, 1)
+        self.button.setObjectName("button")
+        self.gridLayout.addWidget(self.button, 0, 2, 1, 1)
+        self.webView = QtWebKit.QWebView(Form)
+        self.webView.setUrl(QtCore.QUrl("http://developer.pardus.org.tr/"))
+        self.webView.setObjectName("webView")
+        self.gridLayout.addWidget(self.webView, 1, 0, 1, 3)
 
+        self.retranslateUi(Form)
 
-class PTest(QtGui.QWidget, Ui_Form):
-    def __init__(self, *args):
-        QtGui.QWidget.__init__(self)
-        self.setupUi(self)
+        self.info = PMessageBox(Form)
+        self.button.clicked.connect(lambda: self.info.showMessage(self.line.text()))
+        QtCore.QMetaObject.connectSlotsByName(Form)
+
+    def retranslateUi(self, Form):
+        Form.setWindowTitle(QtGui.QApplication.translate("Form", "Form", None, QtGui.QApplication.UnicodeUTF8))
+        self.line.setText(QtGui.QApplication.translate("Form", "This is a test message from PDS GUI !", None, QtGui.QApplication.UnicodeUTF8))
+        self.button.setText(QtGui.QApplication.translate("Form", "Show Message", None, QtGui.QApplication.UnicodeUTF8))
+
+from PyQt4 import QtWebKit
 
 if __name__ == "__main__":
     import sys
     app = QtGui.QApplication(sys.argv)
-    obj = PTest()
-    obj.show()
+    Form = QtGui.QWidget()
+    ui = Ui_Form()
+    ui.setupUi(Form)
+    Form.show()
     sys.exit(app.exec_())
 
