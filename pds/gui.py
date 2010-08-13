@@ -88,8 +88,6 @@ class PAbstractBox(QtGui.QWidget):
         # Poor developer's debug mechanism.
         # print start_pos, stop_pos, width, height
 
-        self.runCallBacks(direction)
-
         if direction == IN:
             self.show()
             if start in (TOPLEFT, MIDLEFT, BOTLEFT):
@@ -115,6 +113,7 @@ class PAbstractBox(QtGui.QWidget):
         self.sceneX.setFrameRange(start_pos[0], stop_pos[0])
         self.sceneX.frameChanged.connect(lambda x: self.move(x, self.y()))
         self.sceneX.finished.connect(lambda: self.setHidden(direction == OUT))
+        self.sceneX.finished.connect(lambda: self.runCallBacks(direction))
 
         self.sceneY.setFrameRange(start_pos[1], stop_pos[1])
         self.sceneY.frameChanged.connect(lambda y: self.move(self.x(), y))
