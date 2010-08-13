@@ -51,8 +51,9 @@ class PAbstractBox(QtGui.QWidget):
         self.sceneX = QtCore.QTimeLine()
         self.sceneY = QtCore.QTimeLine()
         self.animation = 38
+        self.call_back_functions = {IN:[], OUT:[]}
 
-    def animate(self, direction = IN, move_direction = FORWARD, start = TOPCENTER, stop = BOTCENTER):
+    def animate(self, direction = IN, move_direction = FORWARD, start = TOPCENTER, stop = BOTCENTER, show_overlay = False):
         if not self.sceneX.state() == QtCore.QTimeLine.NotRunning:
             return
 
@@ -87,6 +88,8 @@ class PAbstractBox(QtGui.QWidget):
         # Poor developer's debug mechanism.
         # print start_pos, stop_pos, width, height
 
+        self.runCallBacks(direction)
+
         if direction == IN:
             self.show()
             if start in (TOPLEFT, MIDLEFT, BOTLEFT):
@@ -119,12 +122,18 @@ class PAbstractBox(QtGui.QWidget):
         self.sceneX.start()
         self.sceneY.start()
 
+    def registerFunc(self, direction, func):
+        if not func in self.call_back_functions[direction]:
+            self.call_back_functions[direction].append(func)
+
+    def runCallBacks(self, direction):
+        for func in self.call_back_functions[direction]:
+            func()
 
 class PInfoBox(PAbstractBox):
     def __init__(self, parent=None):
         PAbstractBox.__init__(self, parent)
         self.label = QtGui.QLabel('Hello World !', self)
-
 
 class PMessageBox(PAbstractBox):
     def __init__(self, parent=None):
@@ -133,12 +142,18 @@ class PMessageBox(PAbstractBox):
         self.setStyleSheet(STYLE)
         self.padding_w = 14
         self.padding_h = 8
+        effect = QtGui.QGraphicsBlurEffect(parent)
+        clean = QtGui.QGraphicsBlurEffect(self)
+        clean.setBlurRadius(0)
+        self.registerFunc(IN,  lambda: parent.setGraphicsEffect(effect))
+        self.registerFunc(IN,  lambda: self.setGraphicsEffect(clean))
+        self.registerFunc(OUT, lambda: effect.setBlurRadius(0))
         self.hide()
 
     def showMessage(self, message, duration = 2, inPos = TOPCENTER, stopPos = MIDCENTER, outPos = BOTCENTER):
         self.setMessage(message)
-        self.animate(start = inPos, stop = stopPos)
-        QtCore.QTimer.singleShot((2+duration) * 1000, lambda: self.animate(start = stopPos, stop = outPos, direction = OUT))
+        self.animate(start = inPos, stop = stopPos, show_overlay = True)
+        QtCore.QTimer.singleShot((10+duration) * 1000, lambda: self.animate(start = stopPos, stop = outPos, direction = OUT))
 
     def setMessage(self, message):
         self.label.setText(message)
@@ -146,4 +161,18 @@ class PMessageBox(PAbstractBox):
         metric = self.label.fontMetrics()
         self.label.resize(metric.width(message) + self.padding_w, metric.height() + self.padding_h)
         self.resize(metric.width(message) + self.padding_w, metric.height() + self.padding_h)
+
+class PMessageBoxOverlay(PMessageBox):
+    def __init__(self, parent=None):
+        self.overlay = QtGui.QWidget(parent)
+        PMessageBox.__init__(self, parent)
+
+        self.overlay.resize(parent.size())
+        effect = QtGui.QGraphicsBlurEffect(self.overlay)
+        self.overlay.setStyleSheet("background-color: rgba(0,0,0,140)")
+        self.overlay.hide()
+        self.registerFunc(IN,  lambda: self.overlay.show())
+        self.registerFunc(IN,  lambda: self.parent.setGraphicsEffect(effect))
+        self.registerFunc(OUT, lambda: self.overlay.hide())
+        self.registerFunc(OUT,  lambda: effect.setBlurRadius(0))
 
