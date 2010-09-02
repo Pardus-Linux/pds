@@ -95,7 +95,10 @@ class Pds:
         value = None
         if self.session.ConfigType == 'ini':
             # FIXME we dont need to force everytime.
-            settings = self.parse(self.config_file, force = True)
+            if path.exists(str(self.config_file)):
+                settings = self.parse(self.config_file, force = True)
+            else:
+                return default
             _value = settings.value(key)
             if not _value.toString():
                 # Sometimes kdeglobals stores values without quotes

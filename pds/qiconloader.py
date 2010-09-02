@@ -76,8 +76,8 @@ class QIconLoader:
         if not defaultTheme:
             defaultTheme = self.pds.session.DefaultIconTheme
 
-        self.themeName = self.pds.settings(self.pds.session.IconKey, 
-                self.pds.session.DefaultIconTheme)
+        self.themeName = self.pds.settings(self.pds.session.IconKey, \
+                                           self.pds.session.DefaultIconTheme)
 
         # Define icon directories
         self.iconDirs =  filter(lambda x: path.exists(x), 
