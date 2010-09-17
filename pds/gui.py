@@ -136,17 +136,11 @@ class PInfoBox(PAbstractBox):
 
 class PMessageBox(PAbstractBox):
     def __init__(self, parent=None):
-        effect = QtGui.QGraphicsBlurEffect(parent)
-        effect.setBlurRadius(0)
-        parent.setGraphicsEffect(effect)
-
         PAbstractBox.__init__(self, parent)
         self.label = QtGui.QLabel(self)
         self.setStyleSheet(STYLE)
         self.padding_w = 14
         self.padding_h = 8
-        self.registerFunc(IN,  lambda: effect.setBlurRadius(3))
-        self.registerFunc(OUT, lambda: effect.setBlurRadius(0))
         self.hide()
 
     def showMessage(self, message, duration = 2, inPos = TOPCENTER, stopPos = MIDCENTER, outPos = BOTCENTER):
@@ -169,6 +163,7 @@ class PMessageBoxOverlay(PMessageBox):
         self.overlay.resize(parent.size())
         self.overlay.setStyleSheet("background-color: rgba(0,0,0,140)")
         self.overlay.hide()
+
         self.registerFunc(IN,  lambda: self.overlay.show())
         self.registerFunc(OUT, lambda: self.overlay.hide())
 

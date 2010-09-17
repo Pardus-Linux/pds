@@ -1,14 +1,7 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'test.ui'
-#
-# Created: Thu Jul 29 16:37:50 2010
-#      by: PyQt4 UI code generator 4.7.3
-#
-# WARNING! All changes made in this file will be lost!
-
 from PyQt4 import QtCore, QtGui
-from pds.gui import PMessageBox
+from pds.gui import PMessageBoxOverlay
 
 class Ui_Form(object):
     def setupUi(self, Form):
@@ -31,7 +24,7 @@ class Ui_Form(object):
 
         self.retranslateUi(Form)
 
-        self.info = PMessageBox(Form)
+        self.info = PMessageBoxOverlay(Form)
         self.button.clicked.connect(lambda: self.info.showMessage(self.line.text()))
         QtCore.QMetaObject.connectSlotsByName(Form)
 
