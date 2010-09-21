@@ -20,7 +20,8 @@ from PyQt4 import QtCore
 # --------------------
 (TOPLEFT, TOPCENTER, TOPRIGHT, \
  MIDLEFT, MIDCENTER, MIDRIGHT, \
- BOTLEFT, BOTCENTER, BOTRIGHT) = range(9)
+ BOTLEFT, BOTCENTER, BOTRIGHT,
+ CURRENT) = range(10)
 # --------------------
 FORWARD = QtCore.QTimeLine.Forward
 BACKWARD = QtCore.QTimeLine.Backward
@@ -35,6 +36,11 @@ class PAbstractBox(QtGui.QWidget):
             self.overlay = QtGui.QWidget(parent)
 
         QtGui.QWidget.__init__(self, parent)
+
+        self.last_direction = IN
+        self.last_move_direction = FORWARD
+        self.last_start = TOPCENTER
+        self.last_stop = BOTCENTER
 
         parent.resizeEvent = self.resizeCallBacks
         self.parent = parent
@@ -52,13 +58,24 @@ class PAbstractBox(QtGui.QWidget):
             self.registerFunction(OUT,    lambda: self.overlay.hide())
             self.registerFunction(RESIZE, lambda: self.overlay.resize(self.parent.size()))
 
+        self.registerFunction(RESIZE, lambda: '')
+
     def resizeCallBacks(self, event):
         QtGui.QWidget(self.parent).resizeEvent(event)
         self.runCallBacks(RESIZE)
 
-    def animate(self, direction = IN, move_direction = FORWARD, start = TOPCENTER, stop = BOTCENTER, show_overlay = False):
-        if not self.sceneX.state() == QtCore.QTimeLine.NotRunning:
-            return
+    def animate(self, direction = IN, move_direction = FORWARD, start = TOPCENTER, stop = BOTCENTER):
+
+        self.call_back_functions[RESIZE].pop()
+        self.registerFunction(RESIZE, lambda: self.animate(self.last_direction,
+                                                           self.last_move_direction,
+                                                           CURRENT,
+                                                           self.last_stop))
+
+        self.last_stop           = stop
+        self.last_start          = start
+        self.last_move_direction = move_direction
+        self.last_direction      = direction
 
         self.sceneX.setDirection(move_direction)
         self.sceneX.setEasingCurve(QtCore.QEasingCurve(self.animation))
@@ -75,18 +92,19 @@ class PAbstractBox(QtGui.QWidget):
         width  = self.width()
         height = self.height()
 
-        range = {TOPLEFT   : [0, 0],
-                 TOPCENTER : [p_width/2 - width/2, 0],
-                 TOPRIGHT  : [p_width - width, 0],
-                 MIDLEFT   : [0, p_height/2 - height/2],
-                 MIDCENTER : [p_width/2 - width/2, p_height/2 - height/2],
-                 MIDRIGHT  : [p_width - width, p_height/2 - height/2],
-                 BOTLEFT   : [0, p_height - height],
-                 BOTCENTER : [p_width/2 - width/2, p_height - height],
-                 BOTRIGHT  : [p_width - width, p_height - height]}
+        limits = {TOPLEFT   : [0, 0],
+                  TOPCENTER : [p_width/2 - width/2, 0],
+                  TOPRIGHT  : [p_width - width, 0],
+                  MIDLEFT   : [0, p_height/2 - height/2],
+                  MIDCENTER : [p_width/2 - width/2, p_height/2 - height/2],
+                  MIDRIGHT  : [p_width - width, p_height/2 - height/2],
+                  BOTLEFT   : [0, p_height - height],
+                  BOTCENTER : [p_width/2 - width/2, p_height - height],
+                  BOTRIGHT  : [p_width - width, p_height - height],
+                  CURRENT   : [self.x(), self.y()]}
 
-        start_pos = range[start]
-        stop_pos  = range[stop]
+        start_pos = limits[start]
+        stop_pos  = limits[stop]
 
         # Poor developer's debug mechanism.
         # print start_pos, stop_pos, width, height
@@ -121,9 +139,9 @@ class PAbstractBox(QtGui.QWidget):
         self.sceneY.setFrameRange(start_pos[1], stop_pos[1])
         self.sceneY.frameChanged.connect(lambda y: self.move(self.x(), y))
 
-        self.sceneX.start()
-        self.sceneY.start()
-
+        if self.sceneX.state() == QtCore.QTimeLine.NotRunning:
+            self.sceneX.start()
+            self.sceneY.start()
 
     def registerFunction(self, direction, func):
         if not func in self.call_back_functions[direction]:
@@ -160,7 +178,7 @@ class PMessageBox(PAbstractBox):
 
     def showMessage(self, message, duration = 2, inPos = TOPCENTER, stopPos = MIDCENTER, outPos = BOTCENTER):
         self.setMessage(message)
-        self.animate(start = inPos, stop = stopPos, show_overlay = True)
+        self.animate(start = inPos, stop = stopPos)
         QtCore.QTimer.singleShot((10+duration) * 1000, lambda: self.animate(start = stopPos, stop = outPos, direction = OUT))
 
     def setMessage(self, message):
