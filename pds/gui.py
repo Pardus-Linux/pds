@@ -18,40 +18,43 @@ from PyQt4 import QtCore
 
 # PREDEFINED POSITIONS
 # --------------------
-TOPLEFT = 1
-TOPCENTER = 2
-TOPRIGHT = 3
-MIDLEFT = 4
-MIDCENTER = 5
-MIDRIGHT = 6
-BOTLEFT = 7
-BOTCENTER = 8
-BOTRIGHT = 9
+(TOPLEFT, TOPCENTER, TOPRIGHT, \
+ MIDLEFT, MIDCENTER, MIDRIGHT, \
+ BOTLEFT, BOTCENTER, BOTRIGHT) = range(9)
 # --------------------
 FORWARD = QtCore.QTimeLine.Forward
 BACKWARD = QtCore.QTimeLine.Backward
 # --------------------
-IN = 0
-OUT = 1
+(IN, OUT, RESIZE) = range(3)
 # --------------------
 
-# STYLE SHEET
-STYLE = """
-  background-color:rgba(0,0,0,120);
-  color:white;
-  border: 1px solid #FFF;
-  border-radius: 4px;
-"""
-
-
 class PAbstractBox(QtGui.QWidget):
-    def __init__(self, parent):
+    def __init__(self, parent, enable_overlay = False):
+        self.overlay = None
+        if enable_overlay:
+            self.overlay = QtGui.QWidget(parent)
+
         QtGui.QWidget.__init__(self, parent)
+
+        parent.resizeEvent = self.resizeCallBacks
         self.parent = parent
         self.sceneX = QtCore.QTimeLine()
         self.sceneY = QtCore.QTimeLine()
         self.animation = 38
-        self.call_back_functions = {IN:[], OUT:[]}
+        self.call_back_functions = {IN:[], OUT:[], RESIZE:[]}
+
+        if enable_overlay:
+            self.overlay.resize(parent.size())
+            self.overlay.setStyleSheet("background-color: rgba(0,0,0,140)")
+            self.overlay.hide()
+
+            self.registerFunction(IN,     lambda: self.overlay.show())
+            self.registerFunction(OUT,    lambda: self.overlay.hide())
+            self.registerFunction(RESIZE, lambda: self.overlay.resize(self.parent.size()))
+
+    def resizeCallBacks(self, event):
+        QtGui.QWidget(self.parent).resizeEvent(event)
+        self.runCallBacks(RESIZE)
 
     def animate(self, direction = IN, move_direction = FORWARD, start = TOPCENTER, stop = BOTCENTER, show_overlay = False):
         if not self.sceneX.state() == QtCore.QTimeLine.NotRunning:
@@ -121,7 +124,8 @@ class PAbstractBox(QtGui.QWidget):
         self.sceneX.start()
         self.sceneY.start()
 
-    def registerFunc(self, direction, func):
+
+    def registerFunction(self, direction, func):
         if not func in self.call_back_functions[direction]:
             self.call_back_functions[direction].append(func)
 
@@ -129,16 +133,27 @@ class PAbstractBox(QtGui.QWidget):
         for func in self.call_back_functions[direction]:
             func()
 
+class PWidgetbox(PAbstractBox):
+    def __init__(self, parent, widget):
+        PAbstractBox.__init__(self, parent)
+
 class PInfoBox(PAbstractBox):
     def __init__(self, parent=None):
         PAbstractBox.__init__(self, parent)
         self.label = QtGui.QLabel('Hello World !', self)
 
 class PMessageBox(PAbstractBox):
-    def __init__(self, parent=None):
-        PAbstractBox.__init__(self, parent)
+
+    # STYLE SHEET
+    STYLE = """background-color:rgba(0,0,0,120);
+               color:white;
+               border: 1px solid #FFF;
+               border-radius: 4px;"""
+
+    def __init__(self, parent=None, enable_overlay = False):
+        PAbstractBox.__init__(self, parent, enable_overlay)
         self.label = QtGui.QLabel(self)
-        self.setStyleSheet(STYLE)
+        self.setStyleSheet(PMessageBox.STYLE)
         self.padding_w = 14
         self.padding_h = 8
         self.hide()
@@ -154,16 +169,4 @@ class PMessageBox(PAbstractBox):
         metric = self.label.fontMetrics()
         self.label.resize(metric.width(message) + self.padding_w, metric.height() + self.padding_h)
         self.resize(metric.width(message) + self.padding_w, metric.height() + self.padding_h)
-
-class PMessageBoxOverlay(PMessageBox):
-    def __init__(self, parent=None):
-        self.overlay = QtGui.QWidget(parent)
-        PMessageBox.__init__(self, parent)
-
-        self.overlay.resize(parent.size())
-        self.overlay.setStyleSheet("background-color: rgba(0,0,0,140)")
-        self.overlay.hide()
-
-        self.registerFunc(IN,  lambda: self.overlay.show())
-        self.registerFunc(OUT, lambda: self.overlay.hide())
 

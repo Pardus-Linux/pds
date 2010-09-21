@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from PyQt4 import QtCore, QtGui
-from pds.gui import PMessageBoxOverlay
+from pds.gui import PMessageBox
 
 class Ui_Form(object):
     def setupUi(self, Form):
@@ -24,7 +24,7 @@ class Ui_Form(object):
 
         self.retranslateUi(Form)
 
-        self.info = PMessageBoxOverlay(Form)
+        self.info = PMessageBox(Form, enable_overlay = True)
         self.button.clicked.connect(lambda: self.info.showMessage(self.line.text()))
         QtCore.QMetaObject.connectSlotsByName(Form)
 
