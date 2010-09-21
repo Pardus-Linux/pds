@@ -51,11 +51,17 @@ class PAbstractBox(QtGui.QWidget):
 
         if enable_overlay:
             self.overlay.resize(parent.size())
-            self.overlay.setStyleSheet("background-color: rgba(0,0,0,140)")
+            self.sceneF = QtCore.QTimeLine()
+            self.sceneF.setDuration(2000)
+            self.sceneF.setUpdateInterval(20)
+            self.sceneF.setFrameRange(0, 200)
             self.overlay.hide()
 
-            self.registerFunction(IN,     lambda: self.overlay.show())
-            self.registerFunction(OUT,    lambda: self.overlay.hide())
+            self.sceneF.frameChanged.connect(lambda x: self.overlay.setStyleSheet('background-color: rgba(0,0,0,%s)' % x))
+            self.registerFunction(IN,  self.sceneF.stop)
+            self.registerFunction(IN,  lambda: self.sceneF.setFrameRange(200, 0))
+            self.registerFunction(OUT, lambda: self.sceneF.setFrameRange(0, 200))
+
             self.registerFunction(RESIZE, lambda: self.overlay.resize(self.parent.size()))
 
         self.registerFunction(RESIZE, lambda: '')
@@ -139,9 +145,15 @@ class PAbstractBox(QtGui.QWidget):
         self.sceneY.setFrameRange(start_pos[1], stop_pos[1])
         self.sceneY.frameChanged.connect(lambda y: self.move(self.x(), y))
 
+        if self.overlay:
+            self.overlay.show()
+            self.sceneX.finished.connect(lambda: self.overlay.setHidden(direction == OUT))
+
         if self.sceneX.state() == QtCore.QTimeLine.NotRunning:
             self.sceneX.start()
             self.sceneY.start()
+            if not start == CURRENT:
+                self.sceneF.start()
 
     def registerFunction(self, direction, func):
         if not func in self.call_back_functions[direction]:
