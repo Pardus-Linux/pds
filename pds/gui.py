@@ -28,49 +28,72 @@ BACKWARD = QtCore.QTimeLine.Backward
 # --------------------
 (IN, OUT, RESIZE) = range(3)
 # --------------------
+OVERLAY_OPACITY = 200
 
 class PAbstractBox(QtGui.QWidget):
-    def __init__(self, parent, enable_overlay = False):
-        self.overlay = None
-        if enable_overlay:
-            self.overlay = QtGui.QWidget(parent)
-
+    def __init__(self, parent):
+        self.overlay = QtGui.QWidget(parent)
+        self.overlay.hide()
+        self.__overlay_enabled = False
         QtGui.QWidget.__init__(self, parent)
 
         self.last_direction = IN
         self.last_move_direction = FORWARD
         self.last_start = TOPCENTER
         self.last_stop = BOTCENTER
+        self.duration = 2000
 
-        parent.resizeEvent = self.resizeCallBacks
         self.parent = parent
+        self.parent.resizeEvent = self.resizeCallBacks
         self.sceneX = QtCore.QTimeLine()
         self.sceneY = QtCore.QTimeLine()
-        self.animation = 38
+        self.sceneF = QtCore.QTimeLine()
+        self.animation = 30
         self.call_back_functions = {IN:[], OUT:[], RESIZE:[]}
 
-        if enable_overlay:
-            self.overlay.resize(parent.size())
-            self.sceneF = QtCore.QTimeLine()
-            self.sceneF.setDuration(2000)
-            self.sceneF.setUpdateInterval(20)
-            self.sceneF.setFrameRange(0, 200)
-            self.overlay.hide()
+        self.registerFunction(RESIZE, lambda: '')
+        self.registerFunction(OUT, lambda: self.flushCallBacks(RESIZE))
+        self.registerFunction(OUT, lambda: self.registerFunction(RESIZE, lambda: ''))
 
+    def flushCallBacks(self, direction):
+        self.call_back_functions[direction] = []
+
+    def enableOverlay(self, animated = False):
+        self.overlay.resize(self.parent.size())
+        self.__overlay_enabled = True
+        self.sceneF.setUpdateInterval(20)
+        self.registerFunction(IN,  self.sceneF.stop)
+        if animated:
+            self.sceneF.setFrameRange(0, 200)
             self.sceneF.frameChanged.connect(lambda x: self.overlay.setStyleSheet('background-color: rgba(0,0,0,%s)' % x))
-            self.registerFunction(IN,  self.sceneF.stop)
             self.registerFunction(IN,  lambda: self.sceneF.setFrameRange(200, 0))
             self.registerFunction(OUT, lambda: self.sceneF.setFrameRange(0, 200))
+        else:
+            self.overlay.setStyleSheet('background-color: rgba(0, 0, 0, %s)' % OVERLAY_OPACITY)
 
-            self.registerFunction(RESIZE, lambda: self.overlay.resize(self.parent.size()))
-
+        self.registerFunction(RESIZE, lambda: self.overlay.resize(self.parent.size()))
         self.registerFunction(RESIZE, lambda: '')
+
+    def disableOverlay(self):
+        self.__overlay_enabled = False
 
     def resizeCallBacks(self, event):
         QtGui.QWidget(self.parent).resizeEvent(event)
         self.runCallBacks(RESIZE)
 
-    def animate(self, direction = IN, move_direction = FORWARD, start = TOPCENTER, stop = BOTCENTER):
+    def animate(self, direction = IN, move_direction = FORWARD, start = TOPCENTER, stop = BOTCENTER, start_after = None, duration = 0):
+        if start_after:
+            start_after.finished.connect(lambda: self.__animate(direction, move_direction, start, stop, duration))
+        else:
+            return self.__animate(direction, move_direction, start, stop, duration)
+
+    def __animate(self, direction, move_direction, start, stop, duration):
+
+        self.sceneX.stop()
+        self.sceneY.stop()
+        self.sceneF.stop()
+
+        duration = duration if duration > 0 else self.duration
 
         self.call_back_functions[RESIZE].pop()
         self.registerFunction(RESIZE, lambda: self.animate(self.last_direction,
@@ -85,13 +108,14 @@ class PAbstractBox(QtGui.QWidget):
 
         self.sceneX.setDirection(move_direction)
         self.sceneX.setEasingCurve(QtCore.QEasingCurve(self.animation))
-        self.sceneX.setDuration(2000)
+        self.sceneX.setDuration(duration)
         self.sceneX.setUpdateInterval(20)
 
         self.sceneY.setDirection(move_direction)
         self.sceneY.setEasingCurve(QtCore.QEasingCurve(self.animation))
-        self.sceneY.setDuration(2000)
+        self.sceneY.setDuration(duration)
         self.sceneY.setUpdateInterval(20)
+        self.sceneF.setDuration(duration)
 
         p_width  = self.parent.width()
         p_height = self.parent.height()
@@ -145,15 +169,19 @@ class PAbstractBox(QtGui.QWidget):
         self.sceneY.setFrameRange(start_pos[1], stop_pos[1])
         self.sceneY.frameChanged.connect(lambda y: self.move(self.x(), y))
 
-        if self.overlay:
+        if self.__overlay_enabled:
             self.overlay.show()
             self.sceneX.finished.connect(lambda: self.overlay.setHidden(direction == OUT))
+        else:
+            self.overlay.hide()
 
         if self.sceneX.state() == QtCore.QTimeLine.NotRunning:
             self.sceneX.start()
             self.sceneY.start()
             if not start == CURRENT:
                 self.sceneF.start()
+
+        return self.sceneX
 
     def registerFunction(self, direction, func):
         if not func in self.call_back_functions[direction]:
@@ -180,18 +208,19 @@ class PMessageBox(PAbstractBox):
                border: 1px solid #FFF;
                border-radius: 4px;"""
 
-    def __init__(self, parent=None, enable_overlay = False):
-        PAbstractBox.__init__(self, parent, enable_overlay)
+    def __init__(self, parent=None):
+        PAbstractBox.__init__(self, parent)
         self.label = QtGui.QLabel(self)
         self.setStyleSheet(PMessageBox.STYLE)
         self.padding_w = 14
         self.padding_h = 8
         self.hide()
 
-    def showMessage(self, message, duration = 2, inPos = TOPCENTER, stopPos = MIDCENTER, outPos = BOTCENTER):
+    def showMessage(self, message, duration = 2, inPos = MIDLEFT, stopPos = MIDCENTER, outPos = MIDRIGHT):
         self.setMessage(message)
-        self.animate(start = inPos, stop = stopPos)
-        QtCore.QTimer.singleShot((10+duration) * 1000, lambda: self.animate(start = stopPos, stop = outPos, direction = OUT))
+        self.enableOverlay(animated = True)
+        obj = self.animate(start = inPos, stop = stopPos)
+        self.animate(start = stopPos, stop = outPos, direction = OUT, start_after = obj)
 
     def setMessage(self, message):
         self.label.setText(message)

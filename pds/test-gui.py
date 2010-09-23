@@ -24,7 +24,7 @@ class Ui_Form(object):
 
         self.retranslateUi(Form)
 
-        self.info = PMessageBox(Form, enable_overlay = True)
+        self.info = PMessageBox(Form)
         self.button.clicked.connect(lambda: self.info.showMessage(self.line.text()))
         QtCore.QMetaObject.connectSlotsByName(Form)
 
