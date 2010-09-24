@@ -12,6 +12,9 @@
 # Software Foundation; either version 2 of the License, or (at your option)
 # any later version.
 
+# Python Libraries
+import copy
+
 # Qt Libraries
 from PyQt4 import QtGui
 from PyQt4 import QtCore
@@ -48,6 +51,7 @@ class PAbstractBox(QtGui.QWidget):
         self.last_start = TOPCENTER
         self.last_stop = BOTCENTER
         self.duration = 2000
+        self.overlay_duration = 1400
 
         # Override parents resize-event
         self.parent = parent
@@ -96,10 +100,12 @@ class PAbstractBox(QtGui.QWidget):
         if self.__overlay_enabled:
             self.overlay.resize(self.parent.size())
         if self.isVisible():
-            self.animate(self.last_direction,
-                         self.last_move_direction,
-                         CURRENT,
-                         self.last_stop)
+            self.__animate(self.last_direction,
+                           self.last_move_direction,
+                           CURRENT,
+                           self.last_stop,
+                           self.duration,
+                           True)
 
     def animate(self, direction = IN, move_direction = FORWARD, start = TOPCENTER, stop = BOTCENTER, start_after = None, duration = 0):
         if start_after:
@@ -109,7 +115,7 @@ class PAbstractBox(QtGui.QWidget):
             # Otherwise, run the animation directly and return the timeline obj for using as a reference for later animations
             return self.__animate(direction, move_direction, start, stop, duration)
 
-    def __animate(self, direction, move_direction, start, stop, duration):
+    def __animate(self, direction, move_direction, start, stop, duration, just_resize = False):
 
         # Stop all running animations
         self.sceneX.stop()
@@ -138,7 +144,7 @@ class PAbstractBox(QtGui.QWidget):
         self.sceneY.setUpdateInterval(20)
 
         # Update duration for overlay fade effect
-        self.sceneF.setDuration(duration)
+        self.sceneF.setDuration(self.overlay_duration)
 
         # Get current sizes
         p_width  = self.parent.width()
@@ -159,8 +165,9 @@ class PAbstractBox(QtGui.QWidget):
                   CURRENT   : [self.x(), self.y()]}
 
         # Get start and stop positions
-        start_pos = limits[start]
-        stop_pos  = limits[stop]
+        # I used deepcopy in case of selecting same positions for start and stop
+        start_pos = copy.deepcopy(limits[start])
+        stop_pos  = copy.deepcopy(limits[stop])
 
         # Poor developer's debug mechanism.
         # print start_pos, stop_pos, width, height
@@ -212,9 +219,8 @@ class PAbstractBox(QtGui.QWidget):
         if self.sceneX.state() == QtCore.QTimeLine.NotRunning:
             self.sceneX.start()
             self.sceneY.start()
-            if not start == CURRENT:
-                # If start position is CURRENT, it means the animation
-                # will just work for repositioning the widget,
+            if not just_resize:
+                # The animation will just work for repositioning the widget,
                 # so we dont need overlay fade animation
                 self.sceneF.start()
 
@@ -237,30 +243,15 @@ class PAbstractBox(QtGui.QWidget):
 
 class PMessageBox(PAbstractBox):
 
-    # STYLE SHEET
-    STYLE = """background-color:rgba(0,0,0,120);
-               color:white;
-               border: 1px solid #999;
-               border-radius: 4px;"""
-
     def __init__(self, parent=None):
         PAbstractBox.__init__(self, parent)
         self.label = QtGui.QLabel(self)
-        self.setStyleSheet(PMessageBox.STYLE)
-        self.padding_w = 18
-        self.padding_h = 12
-        self.hide()
+        self.label.setStyleSheet("font: 16pt;color: white;background-color:rgba(0,0,0,200)")
 
-    def showMessage(self, message, duration = 2, inPos = MIDLEFT, stopPos = MIDCENTER, outPos = MIDRIGHT):
-        self.setMessage(message)
-        self.enableOverlay(animated = True)
-        obj = self.animate(start = inPos, stop = stopPos)
-        self.animate(start = stopPos, stop = outPos, direction = OUT, start_after = obj)
-
-    def setMessage(self, message):
+    def showMessage(self, message):
+        #, duration = 2, inPos = MIDLEFT, stopPos = MIDCENTER, outPos = MIDRIGHT):
         self.label.setText(message)
+        self.label.resize(QtCore.QSize(300,500))
         self.label.setAlignment(QtCore.Qt.AlignVCenter)
-        metric = self.label.fontMetrics()
-        self.label.resize(metric.width(message) + self.padding_w, metric.height() + self.padding_h)
-        self.resize(metric.width(message) + self.padding_w, metric.height() + self.padding_h)
+        self.animate(start = TOPCENTER, stop = MIDCENTER)
 

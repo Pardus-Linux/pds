@@ -9,13 +9,13 @@ class PWidgetbox(PAbstractBox):
         PAbstractBox.__init__(self, parent)
         ui = widget()
         ui.setupUi(self)
-        self.enableOverlay()
+        self.enableOverlay(True)
 
     def showAnimated(self):
-        self.animate(start = TOPCENTER, stop = MIDCENTER)
+        self.animate(start = TOPCENTER, stop = TOPCENTER)
 
     def hideAnimated(self):
-        self.animate(start = MIDCENTER, stop = BOTCENTER, direction = OUT)
+        self.animate(start = CURRENT, stop = MIDRIGHT, direction = OUT)
 
 class PInfoBox(PAbstractBox):
     def __init__(self, parent=None):
@@ -35,27 +35,32 @@ class Ui_Form(object):
         self.gridLayout.addItem(spacerItem, 0, 1, 1, 1)
         self.button = QtGui.QPushButton(Form)
         self.button2 = QtGui.QPushButton(Form)
+        self.button3 = QtGui.QPushButton(Form)
         self.button.setObjectName("button")
         self.gridLayout.addWidget(self.button, 0, 2, 1, 1)
         self.gridLayout.addWidget(self.button2, 0, 3, 1, 1)
+        self.gridLayout.addWidget(self.button3, 0, 4, 1, 1)
         self.webView = QtWebKit.QWebView(Form)
         self.webView.setUrl(QtCore.QUrl("http://developer.pardus.org.tr/"))
         self.webView.setObjectName("webView")
-        self.gridLayout.addWidget(self.webView, 1, 0, 1, 4)
+        self.gridLayout.addWidget(self.webView, 1, 0, 1, 5)
 
         self.retranslateUi(Form)
 
         self.info = PWidgetbox(Form, Ui_ProgressDialog)
+        self.msg = PMessageBox(Form)
         self.button.clicked.connect(self.info.showAnimated)
         self.button2.clicked.connect(self.info.hideAnimated)
+        self.button3.clicked.connect(lambda:self.msg.showMessage('PDS Rocks !'))
 
         QtCore.QMetaObject.connectSlotsByName(Form)
 
     def retranslateUi(self, Form):
-        Form.setWindowTitle(QtGui.QApplication.translate("Form", "Form", None, QtGui.QApplication.UnicodeUTF8))
-        self.line.setText(QtGui.QApplication.translate("Form", "This is a test message from PDS GUI !", None, QtGui.QApplication.UnicodeUTF8))
-        self.button.setText(QtGui.QApplication.translate("Form", "Show Message", None, QtGui.QApplication.UnicodeUTF8))
-        self.button2.setText(QtGui.QApplication.translate("Form", "Hide Message", None, QtGui.QApplication.UnicodeUTF8))
+        Form.setWindowTitle("Form")
+        self.line.setText("This is a test message from PDS GUI !")
+        self.button.setText("Show Message")
+        self.button2.setText("Hide Message")
+        self.button3.setText("Message")
 
 from PyQt4 import QtWebKit
 
