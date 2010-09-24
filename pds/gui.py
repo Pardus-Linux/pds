@@ -26,7 +26,7 @@ from PyQt4 import QtCore
 FORWARD = QtCore.QTimeLine.Forward
 BACKWARD = QtCore.QTimeLine.Backward
 # --------------------
-(IN, OUT, RESIZE) = range(3)
+(IN, OUT) = range(2)
 # --------------------
 OVERLAY_OPACITY = 200
 
@@ -63,13 +63,10 @@ class PAbstractBox(QtGui.QWidget):
         self.sceneF = QtCore.QTimeLine()
 
         # Animation, QEasingCurve.Type
-        self.animation = 30
+        self.animation = 38
 
         # Callback functions for using at pre-defined statements
-        self.call_back_functions = {IN:[], OUT:[], RESIZE:[]}
-
-        # Dummy function
-        self.registerFunction(RESIZE, lambda: '')
+        self.call_back_functions = {IN:[], OUT:[]}
 
     def enableOverlay(self, animated = False):
         # Resize the overlay with parent's size
@@ -78,8 +75,7 @@ class PAbstractBox(QtGui.QWidget):
         self.sceneF.setUpdateInterval(20)
 
         # When animation finished, overlay animation should be stop
-        # FIXME
-        # self.registerFunction(IN,  self.sceneF.stop)
+        self.registerFunction(IN,  self.sceneF.stop)
 
         if animated:
             # Register animation range for overlay fade-in/out effect
@@ -95,12 +91,15 @@ class PAbstractBox(QtGui.QWidget):
         self.__overlay_enabled = False
 
     def resizeCallBacks(self, event):
-
-        # Run resize callbacks and parent widget's resizeEvent
+        # Run parent widget's resizeEvent and then move widget to new position
         QtGui.QWidget(self.parent).resizeEvent(event)
         if self.__overlay_enabled:
             self.overlay.resize(self.parent.size())
-        self.runCallBacks(RESIZE)
+        if self.isVisible():
+            self.animate(self.last_direction,
+                         self.last_move_direction,
+                         CURRENT,
+                         self.last_stop)
 
     def animate(self, direction = IN, move_direction = FORWARD, start = TOPCENTER, stop = BOTCENTER, start_after = None, duration = 0):
         if start_after:
@@ -119,13 +118,6 @@ class PAbstractBox(QtGui.QWidget):
 
         # Use given duration time or use the default one
         duration = duration if duration > 0 else self.duration
-
-        # Pop the dummy resize function and add a new animation function for repositioning the widget when resize occured.
-        self.call_back_functions[RESIZE].pop()
-        self.registerFunction(RESIZE, lambda: self.animate(self.last_direction,
-                                                           self.last_move_direction,
-                                                           CURRENT,
-                                                           self.last_stop))
 
         # Set last used animations with given values
         self.last_stop           = stop
@@ -203,12 +195,11 @@ class PAbstractBox(QtGui.QWidget):
         self.sceneY.setFrameRange(start_pos[1], stop_pos[1])
         self.sceneY.frameChanged.connect(lambda y: self.move(self.x(), y))
 
-        # Hide widget and reset resize callback functions when direction is OUT
-        self.sceneX.finished.connect(lambda: self.setHidden(direction == OUT))
-        self.sceneX.finished.connect(lambda: self.flushCallBacks(RESIZE, direction == OUT))
-
         # Run predefined callback functions for given direction
         self.runCallBacks(direction)
+
+        # Hide widget when direction is OUT
+        self.sceneX.finished.connect(lambda: self.setHidden(direction == OUT))
 
         # Show/hide overlay if overlay enabled
         if self.__overlay_enabled:
@@ -231,12 +222,8 @@ class PAbstractBox(QtGui.QWidget):
         return self.sceneX
 
     def flushCallBacks(self, direction, approve = False):
-        if approve:
-            # If approved reset given direction's call backs
-            self.call_back_functions[direction] = []
-            if direction == RESIZE:
-                # Dummy function
-                self.registerFunction(RESIZE, lambda: '')
+        # Reset given direction's call backs
+        self.call_back_functions[direction] = []
 
     def registerFunction(self, direction, func):
         # Add function to given direction's list
