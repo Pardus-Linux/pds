@@ -78,7 +78,8 @@ class PAbstractBox(QtGui.QWidget):
         self.sceneF.setUpdateInterval(20)
 
         # When animation finished, overlay animation should be stop
-        self.registerFunction(IN,  self.sceneF.stop)
+        # FIXME
+        # self.registerFunction(IN,  self.sceneF.stop)
 
         if animated:
             # Register animation range for overlay fade-in/out effect
