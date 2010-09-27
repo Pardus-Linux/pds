@@ -108,12 +108,15 @@ class PAbstractBox(QtGui.QWidget):
                            True)
 
     def animate(self, direction = IN, move_direction = FORWARD, start = TOPCENTER, stop = BOTCENTER, start_after = None, duration = 0):
+
         if start_after:
-            # If there is an animation started before this one, we can easily start it when the old one finishes
-            start_after.finished.connect(lambda: self.__animate(direction, move_direction, start, stop, duration))
-        else:
-            # Otherwise, run the animation directly and return the timeline obj for using as a reference for later animations
-            return self.__animate(direction, move_direction, start, stop, duration)
+            if start_after.state() == QtCore.QTimeLine.Running:
+                # If there is an animation started before this one, we can easily start it when the old one finishes
+                start_after.finished.connect(lambda: self.__animate(direction, move_direction, start, stop, duration))
+                return
+
+        # Otherwise, run the animation directly and return the timeline obj for using as a reference for later animations
+        return self.__animate(direction, move_direction, start, stop, duration)
 
     def __animate(self, direction, move_direction, start, stop, duration, just_resize = False):
 
