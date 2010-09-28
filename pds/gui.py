@@ -57,6 +57,16 @@ class PAbstractBox(QtGui.QWidget):
         self.parent = parent
         self.parent.resizeEvent = self.resizeCallBacks
 
+        # Initialize Timelines
+        self.initializeTimeLines()
+
+        # Animation, QEasingCurve.Type
+        self.animation = 38
+
+        # Callback functions for using at pre-defined statements
+        self.call_back_functions = {IN:[], OUT:[]}
+
+    def initializeTimeLines(self):
         # Timeline for X coordinate
         self.sceneX = QtCore.QTimeLine()
 
@@ -65,12 +75,6 @@ class PAbstractBox(QtGui.QWidget):
 
         # Timeline for fade-effect of overlay
         self.sceneF = QtCore.QTimeLine()
-
-        # Animation, QEasingCurve.Type
-        self.animation = 38
-
-        # Callback functions for using at pre-defined statements
-        self.call_back_functions = {IN:[], OUT:[]}
 
     def enableOverlay(self, animated = False):
         # Resize the overlay with parent's size
@@ -124,6 +128,9 @@ class PAbstractBox(QtGui.QWidget):
         self.sceneX.stop()
         self.sceneY.stop()
         self.sceneF.stop()
+
+        # Re-initialize Timelines
+        self.initializeTimeLines()
 
         # Use given duration time or use the default one
         duration = duration if duration > 0 else self.duration
