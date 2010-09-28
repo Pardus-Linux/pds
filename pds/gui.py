@@ -29,7 +29,7 @@ from PyQt4 import QtCore
 FORWARD = QtCore.QTimeLine.Forward
 BACKWARD = QtCore.QTimeLine.Backward
 # --------------------
-(IN, OUT) = range(2)
+(IN, OUT, FINISHED) = range(3)
 # --------------------
 OVERLAY_OPACITY = 200
 
@@ -40,6 +40,7 @@ class PAbstractBox(QtGui.QWidget):
         self.overlay = QtGui.QWidget(parent)
         self.overlay.hide()
         self.__overlay_enabled = False
+        self.__overlay_animated = False
 
         # Main widget initializing on parent widget
         QtGui.QWidget.__init__(self, parent)
@@ -53,9 +54,9 @@ class PAbstractBox(QtGui.QWidget):
         self.duration = 2000
         self.overlay_duration = 1400
 
-        # Override parents resize-event
+        # Parent Widget
         self.parent = parent
-        self.parent.resizeEvent = self.resizeCallBacks
+        self.updateParentResizeEvent()
 
         # Initialize Timelines
         self.initializeTimeLines()
@@ -64,7 +65,14 @@ class PAbstractBox(QtGui.QWidget):
         self.animation = 38
 
         # Callback functions for using at pre-defined statements
-        self.call_back_functions = {IN:[], OUT:[]}
+        self.call_back_functions = {IN:[], OUT:[], FINISHED:[]}
+
+        # Update Parent widgets resize events when animation finished
+        self.registerFunction(FINISHED, self.updateParentResizeEvent)
+
+    def updateParentResizeEvent(self):
+        # Override parents resize-event
+        self.parent.resizeEvent = self.resizeCallBacks
 
     def initializeTimeLines(self):
         # Timeline for X coordinate
@@ -76,10 +84,15 @@ class PAbstractBox(QtGui.QWidget):
         # Timeline for fade-effect of overlay
         self.sceneF = QtCore.QTimeLine()
 
+        # Set overlay animation
+        if self.__overlay_enabled:
+            self.enableOverlay(self.__overlay_animated)
+
     def enableOverlay(self, animated = False):
         # Resize the overlay with parent's size
         self.overlay.resize(self.parent.size())
         self.__overlay_enabled = True
+        self.__overlay_animated = animated
         self.sceneF.setUpdateInterval(20)
 
         # When animation finished, overlay animation should be stop
@@ -217,6 +230,9 @@ class PAbstractBox(QtGui.QWidget):
 
         # Hide widget when direction is OUT
         self.sceneX.finished.connect(lambda: self.setHidden(direction == OUT))
+
+        # Run finish callbacks
+        self.sceneX.finished.connect(lambda: self.runCallBacks(FINISHED))
 
         # Show/hide overlay if overlay enabled
         if self.__overlay_enabled:
