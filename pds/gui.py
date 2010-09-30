@@ -67,6 +67,10 @@ class PAbstractBox(QtGui.QWidget):
         # Callback functions for using at pre-defined statements
         self.call_back_functions = {IN:[], OUT:[], FINISHED:[]}
 
+        # Resize functions for using with resize event
+        self.resize_functions = []
+        self.registerResizeFunction(self.updatePositionWhenResized)
+
         # Update Parent widgets resize events when animation finished
         self.registerFunction(FINISHED, self.updateParentResizeEvent)
 
@@ -87,6 +91,17 @@ class PAbstractBox(QtGui.QWidget):
         # Set overlay animation
         if self.__overlay_enabled:
             self.enableOverlay(self.__overlay_animated)
+
+    def updatePositionWhenResized(self, event):
+        if self.__overlay_enabled:
+            self.overlay.resize(self.parent.size())
+        if self.isVisible():
+            self.__animate(self.last_direction,
+                           self.last_move_direction,
+                           CURRENT,
+                           self.last_stop,
+                           self.duration,
+                           True)
 
     def enableOverlay(self, animated = False):
         # Resize the overlay with parent's size
@@ -114,17 +129,12 @@ class PAbstractBox(QtGui.QWidget):
     def resizeCallBacks(self, event):
         # Run parent widget's resizeEvent and then move widget to new position
         QtGui.QWidget(self.parent).resizeEvent(event)
-        if self.__overlay_enabled:
-            self.overlay.resize(self.parent.size())
-        if self.isVisible():
-            self.__animate(self.last_direction,
-                           self.last_move_direction,
-                           CURRENT,
-                           self.last_stop,
-                           self.duration,
-                           True)
 
-    def animate(self, direction = IN, move_direction = FORWARD, start = TOPCENTER, stop = BOTCENTER, start_after = None, duration = 0):
+        # Run aldready registered resize functions
+        for func in self.resize_functions:
+            func(event)
+
+    def animate(self, direction = IN, move_direction = FORWARD, start = TOPCENTER, stop = BOTCENTER, start_after = None, duration = 0, dont_animate = False):
 
         if start_after:
             if start_after.state() == QtCore.QTimeLine.Running:
@@ -133,9 +143,9 @@ class PAbstractBox(QtGui.QWidget):
                 return
 
         # Otherwise, run the animation directly and return the timeline obj for using as a reference for later animations
-        return self.__animate(direction, move_direction, start, stop, duration)
+        return self.__animate(direction, move_direction, start, stop, duration, dont_animate = dont_animate)
 
-    def __animate(self, direction, move_direction, start, stop, duration, just_resize = False):
+    def __animate(self, direction, move_direction, start, stop, duration, just_resize = False, dont_animate = False):
 
         # Stop all running animations
         self.sceneX.stop()
@@ -241,14 +251,18 @@ class PAbstractBox(QtGui.QWidget):
         else:
             self.overlay.hide()
 
-        # Start the animation !
-        if self.sceneX.state() == QtCore.QTimeLine.NotRunning:
-            self.sceneX.start()
-            self.sceneY.start()
-            if not just_resize:
-                # The animation will just work for repositioning the widget,
-                # so we dont need overlay fade animation
-                self.sceneF.start()
+        if dont_animate:
+            self.overlay.setHidden(direction == OUT)
+            self.setHidden(direction == OUT)
+        else:
+            # Start the animation !
+            if self.sceneX.state() == QtCore.QTimeLine.NotRunning:
+                self.sceneX.start()
+                self.sceneY.start()
+                if not just_resize:
+                    # The animation will just work for repositioning the widget,
+                    # so we dont need overlay fade animation
+                    self.sceneF.start()
 
         # Return the X coordinate timeline obj to use as reference for next animation
         return self.sceneX
@@ -256,6 +270,11 @@ class PAbstractBox(QtGui.QWidget):
     def flushCallBacks(self, direction, approve = False):
         # Reset given direction's call backs
         self.call_back_functions[direction] = []
+
+    def registerResizeFunction(self, func):
+        # Add function to resize functions list
+        if not func in self.resize_functions:
+            self.resize_functions.append(func)
 
     def registerFunction(self, direction, func):
         # Add function to given direction's list
