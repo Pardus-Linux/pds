@@ -37,8 +37,8 @@ class PAbstractBox(QtGui.QWidget):
     def __init__(self, parent):
 
         # Overlay widget, it should be initialized at first
-        self.overlay = QtGui.QWidget(parent)
-        self.overlay.hide()
+        self.__overlay = QtGui.QWidget(parent)
+        self.__overlay.hide()
         self.__overlay_enabled = False
         self.__overlay_animated = False
 
@@ -47,91 +47,91 @@ class PAbstractBox(QtGui.QWidget):
         self.hide()
 
         # Pre-defined states
-        self.last_direction = IN
-        self.last_move_direction = FORWARD
-        self.last_start = TOPCENTER
-        self.last_stop = BOTCENTER
-        self.duration = 2000
-        self.overlay_duration = 1400
+        self.__last_direction = IN
+        self.__last_move_direction = FORWARD
+        self.__last_start = TOPCENTER
+        self.__last_stop = BOTCENTER
+        self.__duration = 2000
+        self.__overlay_duration = 1400
 
         # Parent Widget
-        self.parent = parent
-        self.updateParentResizeEvent()
+        self.__parent = parent
+        self._updateParentResizeEvent()
 
         # Initialize Timelines
-        self.initializeTimeLines()
+        self._initializeTimeLines()
 
         # Animation, QEasingCurve.Type
-        self.animation = 38
+        self.__animation = 38
 
         # Callback functions for using at pre-defined statements
-        self.call_back_functions = {IN:[], OUT:[], FINISHED:[]}
+        self.__call_back_functions = {IN:[], OUT:[], FINISHED:[]}
 
         # Resize functions for using with resize event
-        self.resize_functions = []
-        self.registerResizeFunction(self.updatePositionWhenResized)
+        self.__resize_functions = []
+        self.registerResizeFunction(self._updatePositionWhenResized)
 
         # Update Parent widgets resize events when animation finished
-        self.registerFunction(FINISHED, self.updateParentResizeEvent)
+        self.registerFunction(FINISHED, self._updateParentResizeEvent)
 
-    def updateParentResizeEvent(self):
+    def _updateParentResizeEvent(self):
         # Override parents resize-event
-        self.parent.resizeEvent = self.resizeCallBacks
+        self.__parent.resizeEvent = self._resizeCallBacks
 
-    def initializeTimeLines(self):
+    def _initializeTimeLines(self):
         # Timeline for X coordinate
-        self.sceneX = QtCore.QTimeLine()
+        self.__sceneX = QtCore.QTimeLine()
 
         # Timeline for Y coordinate
-        self.sceneY = QtCore.QTimeLine()
+        self.__sceneY = QtCore.QTimeLine()
 
         # Timeline for fade-effect of overlay
-        self.sceneF = QtCore.QTimeLine()
+        self.__sceneF = QtCore.QTimeLine()
 
         # Set overlay animation
         if self.__overlay_enabled:
             self.enableOverlay(self.__overlay_animated)
 
-    def updatePositionWhenResized(self, event):
+    def _updatePositionWhenResized(self, event):
         if self.__overlay_enabled:
-            self.overlay.resize(self.parent.size())
+            self.__overlay.resize(self.__parent.size())
         if self.isVisible():
-            self.__animate(self.last_direction,
-                           self.last_move_direction,
-                           CURRENT,
-                           self.last_stop,
-                           self.duration,
-                           True)
+            self._animate(self.__last_direction,
+                          self.__last_move_direction,
+                          CURRENT,
+                          self.__last_stop,
+                          self.__duration,
+                          True)
 
     def enableOverlay(self, animated = False):
         # Resize the overlay with parent's size
-        self.overlay.resize(self.parent.size())
+        self.__overlay.resize(self.__parent.size())
         self.__overlay_enabled = True
         self.__overlay_animated = animated
-        self.sceneF.setUpdateInterval(20)
+        self.__sceneF.setUpdateInterval(20)
 
         # When animation finished, overlay animation should be stop
-        self.registerFunction(IN,  self.sceneF.stop)
+        self.registerFunction(IN,  self.__sceneF.stop)
 
         if animated:
             # Register animation range for overlay fade-in/out effect
-            self.sceneF.setFrameRange(0, 200)
-            self.sceneF.frameChanged.connect(lambda x: self.overlay.setStyleSheet('background-color: rgba(0,0,0,%s)' % x))
-            self.registerFunction(IN,  lambda: self.sceneF.setFrameRange(0, 200))
-            self.registerFunction(OUT, lambda: self.sceneF.setFrameRange(200, 0))
+            self.__sceneF.setFrameRange(0, 200)
+            self.__sceneF.frameChanged.connect(lambda x: self.__overlay.setStyleSheet('background-color: rgba(0,0,0,%s)' % x))
+            self.registerFunction(IN,  lambda: self.__sceneF.setFrameRange(0, 200))
+            self.registerFunction(OUT, lambda: self.__sceneF.setFrameRange(200, 0))
         else:
             # Set overlay opacity
-            self.overlay.setStyleSheet('background-color: rgba(0, 0, 0, %s)' % OVERLAY_OPACITY)
+            self.__overlay.setStyleSheet('background-color: rgba(0, 0, 0, %s)' % OVERLAY_OPACITY)
 
     def disableOverlay(self):
         self.__overlay_enabled = False
 
-    def resizeCallBacks(self, event):
+    def _resizeCallBacks(self, event):
         # Run parent widget's resizeEvent and then move widget to new position
-        QtGui.QWidget(self.parent).resizeEvent(event)
+        QtGui.QWidget(self.__parent).resizeEvent(event)
 
         # Run aldready registered resize functions
-        for func in self.resize_functions:
+        for func in self.__resize_functions:
             func(event)
 
     def animate(self, direction = IN, move_direction = FORWARD, start = TOPCENTER, stop = BOTCENTER, start_after = None, duration = 0, dont_animate = False):
@@ -139,49 +139,49 @@ class PAbstractBox(QtGui.QWidget):
         if start_after:
             if start_after.state() == QtCore.QTimeLine.Running:
                 # If there is an animation started before this one, we can easily start it when the old one finishes
-                start_after.finished.connect(lambda: self.__animate(direction, move_direction, start, stop, duration))
+                start_after.finished.connect(lambda: self._animate(direction, move_direction, start, stop, duration))
                 return
 
         # Otherwise, run the animation directly and return the timeline obj for using as a reference for later animations
-        return self.__animate(direction, move_direction, start, stop, duration, dont_animate = dont_animate)
+        return self._animate(direction, move_direction, start, stop, duration, dont_animate = dont_animate)
 
-    def __animate(self, direction, move_direction, start, stop, duration, just_resize = False, dont_animate = False):
+    def _animate(self, direction, move_direction, start, stop, duration, just_resize = False, dont_animate = False):
 
         # Stop all running animations
-        self.sceneX.stop()
-        self.sceneY.stop()
-        self.sceneF.stop()
+        self.__sceneX.stop()
+        self.__sceneY.stop()
+        self.__sceneF.stop()
 
         # Re-initialize Timelines
-        self.initializeTimeLines()
+        self._initializeTimeLines()
 
         # Use given duration time or use the default one
-        duration = duration if duration > 0 else self.duration
+        duration = duration if duration > 0 else self.__duration
 
         # Set last used animations with given values
-        self.last_stop           = stop
-        self.last_start          = start
-        self.last_move_direction = move_direction
-        self.last_direction      = direction
+        self.__last_stop           = stop
+        self.__last_start          = start
+        self.__last_move_direction = move_direction
+        self.__last_direction      = direction
 
         # Set X coordinate timeline settings
-        self.sceneX.setDirection(move_direction)
-        self.sceneX.setEasingCurve(QtCore.QEasingCurve(self.animation))
-        self.sceneX.setDuration(duration)
-        self.sceneX.setUpdateInterval(20)
+        self.__sceneX.setDirection(move_direction)
+        self.__sceneX.setEasingCurve(QtCore.QEasingCurve(self.__animation))
+        self.__sceneX.setDuration(duration)
+        self.__sceneX.setUpdateInterval(20)
 
         # Set Y coordinate timeline settings
-        self.sceneY.setDirection(move_direction)
-        self.sceneY.setEasingCurve(QtCore.QEasingCurve(self.animation))
-        self.sceneY.setDuration(duration)
-        self.sceneY.setUpdateInterval(20)
+        self.__sceneY.setDirection(move_direction)
+        self.__sceneY.setEasingCurve(QtCore.QEasingCurve(self.__animation))
+        self.__sceneY.setDuration(duration)
+        self.__sceneY.setUpdateInterval(20)
 
         # Update duration for overlay fade effect
-        self.sceneF.setDuration(self.overlay_duration)
+        self.__sceneF.setDuration(self.__overlay_duration)
 
         # Get current sizes
-        p_width  = self.parent.width()
-        p_height = self.parent.height()
+        p_width  = self.__parent.width()
+        p_height = self.__parent.height()
         width  = self.width()
         height = self.height()
 
@@ -230,60 +230,60 @@ class PAbstractBox(QtGui.QWidget):
         self.move(start_pos[0], start_pos[1])
 
         # Set calculated start and stop positions
-        self.sceneX.setFrameRange(start_pos[0], stop_pos[0])
-        self.sceneX.frameChanged.connect(lambda x: self.move(x, self.y()))
-        self.sceneY.setFrameRange(start_pos[1], stop_pos[1])
-        self.sceneY.frameChanged.connect(lambda y: self.move(self.x(), y))
+        self.__sceneX.setFrameRange(start_pos[0], stop_pos[0])
+        self.__sceneX.frameChanged.connect(lambda x: self.move(x, self.y()))
+        self.__sceneY.setFrameRange(start_pos[1], stop_pos[1])
+        self.__sceneY.frameChanged.connect(lambda y: self.move(self.x(), y))
 
         # Run predefined callback functions for given direction
         self.runCallBacks(direction)
 
         # Hide widget when direction is OUT
-        self.sceneX.finished.connect(lambda: self.setHidden(direction == OUT))
+        self.__sceneX.finished.connect(lambda: self.setHidden(direction == OUT))
 
         # Run finish callbacks
-        self.sceneX.finished.connect(lambda: self.runCallBacks(FINISHED))
+        self.__sceneX.finished.connect(lambda: self.runCallBacks(FINISHED))
 
         # Show/hide overlay if overlay enabled
         if self.__overlay_enabled:
-            self.overlay.show()
-            self.sceneX.finished.connect(lambda: self.overlay.setHidden(direction == OUT))
+            self.__overlay.show()
+            self.__sceneX.finished.connect(lambda: self.__overlay.setHidden(direction == OUT))
         else:
-            self.overlay.hide()
+            self.__overlay.hide()
 
         if dont_animate:
-            self.overlay.setHidden(direction == OUT)
+            self.__overlay.setHidden(direction == OUT)
             self.setHidden(direction == OUT)
         else:
             # Start the animation !
-            if self.sceneX.state() == QtCore.QTimeLine.NotRunning:
-                self.sceneX.start()
-                self.sceneY.start()
+            if self.__sceneX.state() == QtCore.QTimeLine.NotRunning:
+                self.__sceneX.start()
+                self.__sceneY.start()
                 if not just_resize:
                     # The animation will just work for repositioning the widget,
                     # so we dont need overlay fade animation
-                    self.sceneF.start()
+                    self.__sceneF.start()
 
         # Return the X coordinate timeline obj to use as reference for next animation
-        return self.sceneX
+        return self.__sceneX
 
     def flushCallBacks(self, direction, approve = False):
         # Reset given direction's call backs
-        self.call_back_functions[direction] = []
+        self.__call_back_functions[direction] = []
 
     def registerResizeFunction(self, func):
         # Add function to resize functions list
-        if not func in self.resize_functions:
-            self.resize_functions.append(func)
+        if not func in self.__resize_functions:
+            self.__resize_functions.append(func)
 
     def registerFunction(self, direction, func):
         # Add function to given direction's list
-        if not func in self.call_back_functions[direction]:
-            self.call_back_functions[direction].append(func)
+        if not func in self.__call_back_functions[direction]:
+            self.__call_back_functions[direction].append(func)
 
     def runCallBacks(self, direction):
         # Run all functions for given direction
-        for func in self.call_back_functions[direction]:
+        for func in self.__call_back_functions[direction]:
             func()
 
 class PMessageBox(PAbstractBox):
