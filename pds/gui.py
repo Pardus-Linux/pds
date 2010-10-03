@@ -251,6 +251,7 @@ class PAbstractBox(QtGui.QWidget):
         if dont_animate:
             self.__overlay.setHidden(direction == OUT)
             self.setHidden(direction == OUT)
+            self.runCallBacks(FINISHED)
         else:
             # Start the animation !
             if self.__sceneX.state() == QtCore.QTimeLine.NotRunning:
