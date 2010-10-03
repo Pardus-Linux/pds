@@ -53,6 +53,7 @@ class PAbstractBox(QtGui.QWidget):
         self.__last_stop = BOTCENTER
         self.__overlay_duration = 1400
         self._duration = 2000
+        self._disable_parent_in_shown = False
 
         # Parent Widget
         self.__parent = parent
@@ -74,9 +75,34 @@ class PAbstractBox(QtGui.QWidget):
         # Update Parent widgets resize events when animation finished
         self.registerFunction(FINISHED, self._updateParentResizeEvent)
 
+    def _disable_parent(self):
+        if self._disable_parent_in_shown:
+            for item in self.__parent.children():
+                if not item == self and not item.inherits("QLayout"):
+                    try:
+                        item.setEnabled(not self.__last_direction == IN)
+                    except:
+                        pass
+
     def _updateParentResizeEvent(self):
         # Override parents resize-event
         self.__parent.resizeEvent = self._resizeCallBacks
+
+    def _resizeCallBacks(self, event):
+        # Run aldready registered resize functions
+        for func in self.__resize_functions:
+            func(event)
+
+    def _updatePositionWhenResized(self, event):
+        if self.__overlay_enabled:
+            self.__overlay.resize(self.__parent.size())
+        if self.isVisible():
+            self._animate(self.__last_direction,
+                          self.__last_move_direction,
+                          CURRENT,
+                          self.__last_stop,
+                          self._duration,
+                          True)
 
     def _initializeTimeLines(self):
         # Timeline for X coordinate
@@ -91,17 +117,6 @@ class PAbstractBox(QtGui.QWidget):
         # Set overlay animation
         if self.__overlay_enabled:
             self.enableOverlay(self.__overlay_animated)
-
-    def _updatePositionWhenResized(self, event):
-        if self.__overlay_enabled:
-            self.__overlay.resize(self.__parent.size())
-        if self.isVisible():
-            self._animate(self.__last_direction,
-                          self.__last_move_direction,
-                          CURRENT,
-                          self.__last_stop,
-                          self._duration,
-                          True)
 
     def enableOverlay(self, animated = False):
         # Resize the overlay with parent's size
@@ -125,11 +140,6 @@ class PAbstractBox(QtGui.QWidget):
 
     def disableOverlay(self):
         self.__overlay_enabled = False
-
-    def _resizeCallBacks(self, event):
-        # Run aldready registered resize functions
-        for func in self.__resize_functions:
-            func(event)
 
     def animate(self, direction = IN, move_direction = FORWARD, start = TOPCENTER, stop = BOTCENTER, start_after = None, duration = 0, dont_animate = False):
 
@@ -234,6 +244,7 @@ class PAbstractBox(QtGui.QWidget):
 
         # Run predefined callback functions for given direction
         self.runCallBacks(direction)
+        self._disable_parent()
 
         # Hide widget when direction is OUT
         self.__sceneX.finished.connect(lambda: self.setHidden(direction == OUT))
