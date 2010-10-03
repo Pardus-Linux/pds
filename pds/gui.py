@@ -127,9 +127,6 @@ class PAbstractBox(QtGui.QWidget):
         self.__overlay_enabled = False
 
     def _resizeCallBacks(self, event):
-        # Run parent widget's resizeEvent and then move widget to new position
-        QtGui.QWidget(self.__parent).resizeEvent(event)
-
         # Run aldready registered resize functions
         for func in self.__resize_functions:
             func(event)
