@@ -51,8 +51,8 @@ class PAbstractBox(QtGui.QWidget):
         self.__last_move_direction = FORWARD
         self.__last_start = TOPCENTER
         self.__last_stop = BOTCENTER
-        self.__duration = 2000
         self.__overlay_duration = 1400
+        self._duration = 2000
 
         # Parent Widget
         self.__parent = parent
@@ -62,7 +62,7 @@ class PAbstractBox(QtGui.QWidget):
         self._initializeTimeLines()
 
         # Animation, QEasingCurve.Type
-        self.__animation = 38
+        self._animation = 38
 
         # Callback functions for using at pre-defined statements
         self.__call_back_functions = {IN:[], OUT:[], FINISHED:[]}
@@ -100,7 +100,7 @@ class PAbstractBox(QtGui.QWidget):
                           self.__last_move_direction,
                           CURRENT,
                           self.__last_stop,
-                          self.__duration,
+                          self._duration,
                           True)
 
     def enableOverlay(self, animated = False):
@@ -153,7 +153,7 @@ class PAbstractBox(QtGui.QWidget):
         self._initializeTimeLines()
 
         # Use given duration time or use the default one
-        duration = duration if duration > 0 else self.__duration
+        duration = duration if duration > 0 else self._duration
 
         # Set last used animations with given values
         self.__last_stop           = stop
@@ -163,13 +163,13 @@ class PAbstractBox(QtGui.QWidget):
 
         # Set X coordinate timeline settings
         self.__sceneX.setDirection(move_direction)
-        self.__sceneX.setEasingCurve(QtCore.QEasingCurve(self.__animation))
+        self.__sceneX.setEasingCurve(QtCore.QEasingCurve(self._animation))
         self.__sceneX.setDuration(duration)
         self.__sceneX.setUpdateInterval(20)
 
         # Set Y coordinate timeline settings
         self.__sceneY.setDirection(move_direction)
-        self.__sceneY.setEasingCurve(QtCore.QEasingCurve(self.__animation))
+        self.__sceneY.setEasingCurve(QtCore.QEasingCurve(self._animation))
         self.__sceneY.setDuration(duration)
         self.__sceneY.setUpdateInterval(20)
 
