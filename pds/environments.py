@@ -72,5 +72,5 @@ class Enlightenment(DefaultDe):
     ConfigFile           = 'config/standard/e.cfg'
     ConfigType           = 'env'
     DefaultIconTheme     = 'hicolor'
-    IconKey              = 'ICON_THEME'
+    IconKey              = 'E_ICON_THEME'
 
