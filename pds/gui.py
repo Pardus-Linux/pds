@@ -47,7 +47,7 @@ class PAbstractBox(QtGui.QWidget):
         self.hide()
 
         # Pre-defined states
-        self.__last_direction = IN
+        self.__last_direction = OUT
         self.__last_move_direction = FORWARD
         self.__last_start = TOPCENTER
         self.__last_stop = BOTCENTER
@@ -84,6 +84,9 @@ class PAbstractBox(QtGui.QWidget):
                     except:
                         pass
 
+    def _isVisible(self):
+        return self.__last_direction == IN
+
     def _updateParentResizeEvent(self):
         # Override parents resize-event
         self.__parent.resizeEvent = self._resizeCallBacks
@@ -96,7 +99,7 @@ class PAbstractBox(QtGui.QWidget):
     def _updatePositionWhenResized(self, event):
         if self.__overlay_enabled:
             self.__overlay.resize(self.__parent.size())
-        if self.isVisible():
+        if self.isVisible() or self.__last_direction == IN:
             self._animate(self.__last_direction,
                           self.__last_move_direction,
                           CURRENT,
