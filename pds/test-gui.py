@@ -12,6 +12,7 @@
 from PyQt4 import QtCore, QtGui
 from pds.gui import *
 from pds.progress import Ui_ProgressDialog
+from pds.new import Ui_Form
 
 class PWidgetbox(PAbstractBox):
     def __init__(self, parent, widget):
@@ -19,19 +20,20 @@ class PWidgetbox(PAbstractBox):
         ui = widget()
         ui.setupUi(self)
         self.enableOverlay(True)
+        self._animation = 38
 
     def showAnimated(self):
-        self.animate(start = TOPCENTER, stop = TOPCENTER)
+        self.animate(start = TOPCENTER, stop = BOTCENTER)
 
     def hideAnimated(self):
-        self.animate(start = CURRENT, stop = MIDRIGHT, direction = OUT)
+        self.animate(start = CURRENT, stop = TOPCENTER, direction = OUT)
 
 class PInfoBox(PAbstractBox):
     def __init__(self, parent=None):
         PAbstractBox.__init__(self, parent)
         self.label = QtGui.QLabel('Hello World !', self)
 
-class Ui_Form(object):
+class Ui_Form2(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
         Form.resize(743, 487)
@@ -56,8 +58,8 @@ class Ui_Form(object):
 
         self.retranslateUi(Form)
 
-        self.info = PWidgetbox(Form, Ui_ProgressDialog)
-        self.msg = PMessageBox(Form)
+        self.info = PWidgetbox(Form, Ui_Form)
+        self.msg = PMessageBox(self.webView)
         self.button.clicked.connect(self.info.showAnimated)
         self.button2.clicked.connect(self.info.hideAnimated)
         self.button3.clicked.connect(lambda:self.msg.showMessage('PDS Rocks !'))
@@ -77,7 +79,7 @@ if __name__ == "__main__":
     import sys
     app = QtGui.QApplication(sys.argv)
     Form = QtGui.QWidget()
-    ui = Ui_Form()
+    ui = Ui_Form2()
     ui.setupUi(Form)
     Form.show()
     sys.exit(app.exec_())

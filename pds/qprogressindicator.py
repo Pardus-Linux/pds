@@ -29,7 +29,7 @@ class QProgressIndicator(QWidget):
 
         self.angle = 0
         self.timerId = -1
-        self.delay = 40
+        self.delay = 80
         self.displayedWhenStopped = False
         self.color = Qt.black
 

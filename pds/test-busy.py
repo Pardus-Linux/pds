@@ -23,11 +23,18 @@ class UI(QtGui.QWidget):
         QtGui.QWidget.__init__(self, parent)
 
         self.gl = QtGui.QGridLayout(self)
-        self.busy = QProgressIndicator(self)
-        self.gl.addWidget(self.busy)
 
-        self.busy.show()
+        butonh = QtGui.QPushButton("click to hide", self)
+        butons = QtGui.QPushButton("click to show", self)
+        self.busy = QProgressIndicator(self)
+
+        self.gl.addWidget(butonh)
+        self.gl.addWidget(self.busy)
+        self.gl.addWidget(butons)
+
         self.busy.startAnimation()
+        butonh.clicked.connect(self.busy.stopAnimation)
+        butons.clicked.connect(self.busy.startAnimation)
 
 if __name__ == "__main__":
     import sys
