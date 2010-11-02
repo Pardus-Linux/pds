@@ -19,9 +19,7 @@ class PApplicationContainer(Qt.QX11EmbedContainer):
     def __init__(self, parent = None, process = None, args = ()):
         Qt.QX11EmbedContainer.__init__(self, parent)
 
-        self._label = Qt.QLabel(self)
-        self._label.hide()
-
+        self._label = None
         self._proc = None
         self._process = process
         self._args = args
@@ -42,10 +40,10 @@ class PApplicationContainer(Qt.QX11EmbedContainer):
 
         self.clientClosed.connect(self._proc.close)
 
-        return (True, "\"%s\" process successfully started with pid = %s" % (process, self._proc.pid()))
+        return (True, "'%s' process successfully started with pid = %s" % (process, self._proc.pid()))
 
     def closeEvent(self, event):
-        if self._proc:
+        if self.isRunning():
             self._proc.terminate()
             self._showMessage("Terminating process %s" % self._process)
             self._proc.waitForFinished()
@@ -59,8 +57,16 @@ class PApplicationContainer(Qt.QX11EmbedContainer):
             self.close()
 
     def _showMessage(self, message):
+        if not self._label:
+            self._label = Qt.QLabel(self)
+
         self._label.setText(message)
         self._label.show()
+
+    def isRunning(self):
+        if not self._proc:
+            return False
+        return not self._proc.state() == Qt.QProcess.NotRunning
 
 class PNetworkManager(PApplicationContainer):
     def __init__(self, parent = None):
@@ -79,28 +85,46 @@ class PMplayer(PApplicationContainer):
     def __init__(self, parent = None):
         PApplicationContainer.__init__(self, parent)
 
+        if parent:
+            parent.closeEvent = self.closeEvent
+
     def openMedia(self, path):
         ret = self.start("mplayer", ("-wid", str(self.winId()), path))
 
         if ret[0]:
-            self.resize(Qt.QSize(640, 480))
             self.show()
 
         return ret
 
+class TestUI(Qt.QWidget):
+    def __init__(self, parent=None):
+        Qt.QWidget.__init__(self, parent)
+        self.layout = Qt.QGridLayout(self)
+
+        self.pushbutton = Qt.QPushButton("Open Media", self)
+        self.layout.addWidget(self.pushbutton)
+
+        self.mplayer = PMplayer(self)
+        self.layout.addWidget(self.mplayer)
+
+        self.pushbutton.clicked.connect(self.getMedia)
+
+    def getMedia(self):
+        self.mplayer.openMedia(
+                Qt.QFileDialog.getOpenFileName(self,
+                    "Open Media", "/", "Media Files (*.ogv *.mov *.avi)"))
+
 if __name__ == "__main__":
     import sys
 
-    if len(sys.argv) == 1:
-        sys.exit("Usage: %s MEDIA_FILE" % sys.argv[0])
-
     app = Qt.QApplication(sys.argv)
 
+    # Network Manager Usage
     # ui = PNetworkManager()
     # ui.startNetworkManager()
 
-    ui = PMplayer()
-    ui.openMedia(sys.argv[1])
+    ui = TestUI()
+    ui.show()
 
     app.lastWindowClosed.connect(sys.exit)
 
