@@ -24,14 +24,14 @@ from PyQt4.QtGui import QPainter
 
 class QProgressIndicator(QWidget):
 
-    def __init__(self, parent):
+    def __init__(self, parent, color = "black"):
         QWidget.__init__(self, parent)
 
         self.angle = 0
         self.timerId = -1
         self.delay = 80
         self.displayedWhenStopped = False
-        self.color = Qt.black
+        self.color = QColor(color)
 
     def isAnimated(self):
         return not self.timerId == -1
