@@ -41,6 +41,7 @@ class PAbstractBox(QtGui.QWidget):
         self.__overlay.hide()
         self.__overlay_enabled = False
         self.__overlay_animated = False
+        self.__overlay_styled = False
 
         # Main widget initializing on parent widget
         QtGui.QWidget.__init__(self, parent)
@@ -119,27 +120,31 @@ class PAbstractBox(QtGui.QWidget):
 
         # Set overlay animation
         if self.__overlay_enabled:
-            self.enableOverlay(self.__overlay_animated)
+            self.enableOverlay(self.__overlay_animated, self.__overlay_styled)
 
-    def enableOverlay(self, animated = False):
+    def enableOverlay(self, animated = False, use_style = True):
         # Resize the overlay with parent's size
         self.__overlay.resize(self.__parent.size())
         self.__overlay_enabled = True
         self.__overlay_animated = animated
+        self.__overlay_styled = use_style
         self.__sceneF.setUpdateInterval(20)
 
         # When animation finished, overlay animation should be stop
         self.registerFunction(IN,  self.__sceneF.stop)
 
-        if animated:
-            # Register animation range for overlay fade-in/out effect
-            self.__sceneF.setFrameRange(0, 200)
-            self.__sceneF.frameChanged.connect(lambda x: self.__overlay.setStyleSheet('background-color: rgba(0,0,0,%s)' % x))
-            self.registerFunction(IN,  lambda: self.__sceneF.setFrameRange(0, 200))
-            self.registerFunction(OUT, lambda: self.__sceneF.setFrameRange(200, 0))
+        if self.__overlay_styled:
+            if animated:
+                # Register animation range for overlay fade-in/out effect
+                self.__sceneF.setFrameRange(0, 200)
+                self.__sceneF.frameChanged.connect(lambda x: self.__overlay.setStyleSheet('background-color: rgba(0,0,0,%s)' % x))
+                self.registerFunction(IN,  lambda: self.__sceneF.setFrameRange(0, 200))
+                self.registerFunction(OUT, lambda: self.__sceneF.setFrameRange(200, 0))
+            else:
+                # Set overlay opacity
+                self.__overlay.setStyleSheet('background-color: rgba(0,0,0,%s)' % OVERLAY_OPACITY)
         else:
-            # Set overlay opacity
-            self.__overlay.setStyleSheet('background-color: rgba(0, 0, 0, %s)' % OVERLAY_OPACITY)
+            self.__overlay.setAutoFillBackground(True)
 
     def disableOverlay(self):
         self.__overlay_enabled = False
