@@ -21,17 +21,22 @@ from PyQt4.QtCore import QSize
 from PyQt4.QtGui import QColor
 from PyQt4.QtGui import QWidget
 from PyQt4.QtGui import QPainter
+from PyQt4.QtGui import QPalette
 
 class QProgressIndicator(QWidget):
 
-    def __init__(self, parent, color = "black"):
+    def __init__(self, parent, color = None):
         QWidget.__init__(self, parent)
 
         self.angle = 0
         self.timerId = -1
         self.delay = 80
         self.displayedWhenStopped = False
-        self.color = QColor(color)
+        self.color = self.palette().color(QPalette.Text) if not color else QColor(color)
+
+    def busy(self):
+        self.startAnimation()
+        self.show()
 
     def isAnimated(self):
         return not self.timerId == -1
