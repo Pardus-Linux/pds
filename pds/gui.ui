@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>PdsTest</class>
+ <widget class="QWidget" name="PdsTest">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>947</width>
+    <height>519</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Pds Test</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout_2">
+   <item row="0" column="0" colspan="10">
+    <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <item>
+      <widget class="QLineEdit" name="lineMessage">
+       <property name="text">
+        <string>Hello Pardus !</string>
+       </property>
+       <property name="placeholderText">
+        <string>Type your message...</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="enableOverlay">
+       <property name="text">
+        <string>Enable Overlay</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="animatedOverlay">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="text">
+        <string>Overlay Animated</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="enableBusy">
+       <property name="text">
+        <string>Enable Busy Indicator</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="0" column="10">
+    <widget class="QPushButton" name="showButton">
+     <property name="text">
+      <string>Show Message</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>In Pos</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QComboBox" name="inPos">
+     <property name="currentIndex">
+      <number>1</number>
+     </property>
+     <item>
+      <property name="text">
+       <string>TOPLEFT</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>TOPCENTER</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>TOPRIGHT</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>MIDDLELEFT</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>MIDDLECENTER</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>MIDDLERIGHT</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>BOTTOMLEFT</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>BOTTOMCENTER</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>BOTTOMRIGHT</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item row="1" column="2">
+    <widget class="QLabel" name="label_3">
+     <property name="text">
+      <string>Stop Pos</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="3">
+    <widget class="QComboBox" name="stopPos">
+     <property name="currentIndex">
+      <number>4</number>
+     </property>
+     <item>
+      <property name="text">
+       <string>TOPLEFT</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>TOPCENTER</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>TOPRIGHT</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>MIDDLELEFT</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>MIDDLECENTER</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>MIDDLERIGHT</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>BOTTOMLEFT</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>BOTTOMCENTER</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>BOTTOMRIGHT</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item row="1" column="4">
+    <widget class="QLabel" name="label_4">
+     <property name="text">
+      <string>Out Pos </string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="5">
+    <widget class="QComboBox" name="outPos">
+     <property name="currentIndex">
+      <number>7</number>
+     </property>
+     <item>
+      <property name="text">
+       <string>TOPLEFT</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>TOPCENTER</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>TOPRIGHT</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>MIDDLELEFT</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>MIDDLECENTER</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>MIDDLERIGHT</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>BOTTOMLEFT</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>BOTTOMCENTER</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>BOTTOMRIGHT</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item row="1" column="6">
+    <widget class="QLabel" name="label_5">
+     <property name="text">
+      <string>Duration</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="7">
+    <widget class="QSpinBox" name="duration">
+     <property name="minimum">
+      <number>100</number>
+     </property>
+     <property name="maximum">
+      <number>5000</number>
+     </property>
+     <property name="singleStep">
+      <number>100</number>
+     </property>
+     <property name="value">
+      <number>500</number>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="8">
+    <widget class="QLabel" name="label_2">
+     <property name="text">
+      <string>Animation</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="9">
+    <widget class="QSpinBox" name="animation">
+     <property name="toolTip">
+      <string>Look QEasingCurve for meanings of numbers</string>
+     </property>
+     <property name="minimum">
+      <number>0</number>
+     </property>
+     <property name="maximum">
+      <number>40</number>
+     </property>
+     <property name="value">
+      <number>38</number>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="10">
+    <widget class="QPushButton" name="hideButton">
+     <property name="text">
+      <string>Hide Message</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0" colspan="11">
+    <widget class="QGroupBox" name="target">
+     <property name="title">
+      <string>PDS Parent Widget</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="0">
+       <widget class="QWebView" name="webView">
+        <property name="url">
+         <url>
+          <string>http://developer.pardus.org.tr/</string>
+         </url>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QWebView</class>
+   <extends>QWidget</extends>
+   <header>QtWebKit/QWebView</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>enableOverlay</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>animatedOverlay</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>333</x>
+     <y>19</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>449</x>
+     <y>25</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

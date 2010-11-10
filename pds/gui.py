@@ -305,15 +305,21 @@ class PAbstractBox(QtGui.QWidget):
 
 class PMessageBox(PAbstractBox):
 
+    STYLE = """color:white;
+               font-size:16pt;
+               background-color:rgba(0,0,0,200);
+               border: 1px solid rgba(0,0,0,200);
+               border-radius:4px;
+            """
+
     def __init__(self, parent=None):
         PAbstractBox.__init__(self, parent)
         self.label = QtGui.QLabel(self)
-        self.label.setStyleSheet("font: 16pt;color: white;background-color:rgba(0,0,0,200)")
+        self.setStyleSheet(PMessageBox.STYLE)
 
     def showMessage(self, message):
-        #, duration = 2, inPos = MIDLEFT, stopPos = MIDCENTER, outPos = MIDRIGHT):
         self.label.setText(message)
-        self.label.resize(QtCore.QSize(300,500))
+        self.setFixedWidth(self.label.fontMetrics().width(message + 'XX'))
         self.label.setAlignment(QtCore.Qt.AlignVCenter)
         self.animate(start = TOPCENTER, stop = MIDCENTER)
 
