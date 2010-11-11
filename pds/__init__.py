@@ -88,7 +88,7 @@ class Pds:
             notifier = pynotify.Notification(unicode(title), unicode(message),\
                     icon or self.catalogName)
             notifier.show()
-        except ImportError:
+        except:
             logging.info(message)
 
     def settings(self, key, default):
