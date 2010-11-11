@@ -11,44 +11,15 @@
 
 from PyQt4 import QtCore, QtGui
 from pds.gui import *
-from pds.qprogressindicator import QProgressIndicator
-from pds.progress import Ui_ProgressDialog
 from pds.ui_gui import Ui_PdsTest
 
-class PTestBox(PAbstractBox):
+class PTestUI(QtGui.QWidget):
 
-    # STYLE SHEET
     STYLE = """color:white;
                font-size:16pt;
                background-color:rgba(0,0,0,200);
                border: 1px solid rgba(0,0,0,200);
                border-radius:4px;"""
-
-    def __init__(self, parent):
-        PAbstractBox.__init__(self, parent)
-        self.setStyleSheet(PTestBox.STYLE)
-
-        self.layout = QtGui.QHBoxLayout(self)
-
-        self.busy = QProgressIndicator(self, "white")
-        self.busy.hide()
-        self.layout.addWidget(self.busy)
-
-        self.label = QtGui.QLabel(self)
-        self.layout.addWidget(self.label)
-
-        self._animation = 2
-        self._duration = 500
-
-    def setMessage(self, message):
-        if message == '':
-            self.label.hide()
-        else:
-            self.label.setText(message)
-            self.label.setAlignment(QtCore.Qt.AlignVCenter)
-        self.adjustSize()
-
-class PTestUI(QtGui.QWidget):
 
     def __init__(self, parent = None):
         QtGui.QWidget.__init__(self, parent)
@@ -88,15 +59,15 @@ class PTestUI(QtGui.QWidget):
             if self.msg.isVisible():
                 return
 
-        self.msg = PTestBox(self.ui.target)
+        self.msg = PMessageBox(self.ui.target)
+        self.msg.setStyleSheet(PTestUI.STYLE)
         self.msg._animation = self.ui.animation.value()
         self.msg._duration = self.ui.duration.value()
 
         if self.ui.enableOverlay.isChecked():
             self.msg.enableOverlay(self.ui.animatedOverlay.isChecked())
         if self.ui.enableBusy.isChecked():
-            self.msg.busy.show()
-            self.msg.busy.startAnimation()
+            self.msg.busy.busy()
 
         self.act(self.msg, IN)
 

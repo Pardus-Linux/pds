@@ -303,23 +303,39 @@ class PAbstractBox(QtGui.QWidget):
         for func in self.__call_back_functions[direction]:
             func()
 
+from pds.qprogressindicator import QProgressIndicator
+
 class PMessageBox(PAbstractBox):
 
-    STYLE = """color:white;
-               font-size:16pt;
-               background-color:rgba(0,0,0,200);
-               border: 1px solid rgba(0,0,0,200);
-               border-radius:4px;
-            """
-
-    def __init__(self, parent=None):
+    def __init__(self, parent):
         PAbstractBox.__init__(self, parent)
-        self.label = QtGui.QLabel(self)
-        self.setStyleSheet(PMessageBox.STYLE)
 
-    def showMessage(self, message):
-        self.label.setText(message)
-        self.setFixedWidth(self.label.fontMetrics().width(message + 'XX'))
-        self.label.setAlignment(QtCore.Qt.AlignVCenter)
-        self.animate(start = TOPCENTER, stop = MIDCENTER)
+        self.layout = QtGui.QHBoxLayout(self)
+
+        self.icon = QtGui.QLabel(self)
+        self.icon.hide()
+        self.layout.addWidget(self.icon)
+
+        self.busy = QProgressIndicator(self, "white")
+        self.busy.hide()
+        self.layout.addWidget(self.busy)
+
+        self.label = QtGui.QLabel(self)
+        self.layout.addWidget(self.label)
+
+        self._animation = 2
+        self._duration = 500
+
+    def setMessage(self, message):
+        if message == '':
+            self.label.hide()
+        else:
+            self.label.setText(message)
+            self.label.setAlignment(QtCore.Qt.AlignVCenter)
+        self.adjustSize()
+
+    def setIcon(self, icon):
+        self.icon.setPixmap(QtGui.QPixmap(icon))
+        self.icon.show()
+        self.adjustSize()
 
