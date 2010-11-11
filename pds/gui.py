@@ -334,8 +334,11 @@ class PMessageBox(PAbstractBox):
             self.label.setAlignment(QtCore.Qt.AlignVCenter)
         self.adjustSize()
 
-    def setIcon(self, icon):
-        self.icon.setPixmap(QtGui.QPixmap(icon))
-        self.icon.show()
+    def setIcon(self, icon=None):
+        if not icon:
+            self.icon.hide()
+        else:
+            self.icon.setPixmap(icon.pixmap(22, 22))
+            self.icon.show()
         self.adjustSize()
 
