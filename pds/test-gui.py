@@ -32,11 +32,6 @@ class PTestUI(QtGui.QWidget):
 
         self.msg = None
 
-    def resetMessage(self):
-        if self.msg:
-            self.msg.deleteLater()
-        self.msg = None
-
     def act(self, obj, direction):
         start_pos = self.ui.inPos.currentIndex() if direction == IN \
                else CURRENT
@@ -74,7 +69,6 @@ class PTestUI(QtGui.QWidget):
     def hideClicked(self):
         if self.msg:
             if self.msg.isVisible():
-                self.msg.registerFunction(FINISHED, self.resetMessage)
                 self.act(self.msg, OUT)
 
 if __name__ == "__main__":

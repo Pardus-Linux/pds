@@ -163,9 +163,9 @@ class PAbstractBox(QtGui.QWidget):
     def _animate(self, direction, move_direction, start, stop, duration, just_resize = False, dont_animate = False):
 
         # Stop all running animations
-        self.__sceneX.stop()
-        self.__sceneY.stop()
-        self.__sceneF.stop()
+        for timeline in (self.__sceneX, self.__sceneY, self.__sceneF):
+            timeline.stop()
+            timeline.deleteLater()
 
         # Re-initialize Timelines
         self._initializeTimeLines()
