@@ -165,7 +165,6 @@ class PAbstractBox(QtGui.QWidget):
         # Stop all running animations
         for timeline in (self.__sceneX, self.__sceneY, self.__sceneF):
             timeline.stop()
-            timeline.deleteLater()
 
         # Re-initialize Timelines
         self._initializeTimeLines()
