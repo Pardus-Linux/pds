@@ -7,7 +7,7 @@ pds/__init__.py
 pds/container.py
 pds/environments.py
 pds/gui.py
-pds/new.py
+pds/gui.ui
 pds/progress.py
 pds/qiconloader.py
 pds/qprogressindicator.py
@@ -17,3 +17,5 @@ pds/test-cli.py
 pds/test-gui.py
 pds/test-pds.py
 pds/test-qapp.py
+pds/thread.py
+pds/ui_gui.py
