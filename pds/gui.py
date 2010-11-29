@@ -122,6 +122,14 @@ class PAbstractBox(QtGui.QWidget):
         if self.__overlay_enabled:
             self.enableOverlay(self.__overlay_animated, self.__overlay_styled)
 
+    def enableShadow(self, offset = 3, radius = 9, color = 'black'):
+        # Enable shadow for mainwidget with given features
+        self.__effect = QtGui.QGraphicsDropShadowEffect(self)
+        self.__effect.setBlurRadius(radius)
+        self.__effect.setOffset(offset)
+        self.__effect.setColor(QtGui.QColor(color))
+        self.setGraphicsEffect(self.__effect)
+
     def enableOverlay(self, animated = False, use_style = True):
         # Resize the overlay with parent's size
         self.__overlay.resize(self.__parent.size())
