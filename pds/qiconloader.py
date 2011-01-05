@@ -16,8 +16,8 @@ from os import getenv
 from glob import glob
 
 # PyQt4 Core Libraries
-from PyQt4.QtCore import QFile, QFileInfo, QString, QDir, QSize, QSettings
-from PyQt4.QtGui import QPixmap, QPixmapCache, QIcon
+from PyQt4.QtCore import QFile, QFileInfo, QString, QDir, QSize, QSettings, Qt
+from PyQt4.QtGui import QPixmap, QPixmapCache, QIcon, QPainter
 from PyQt4 import QtNetwork
 
 # Logging
@@ -234,6 +234,17 @@ class QIconLoader:
                 return self.pixmap
             return icon.pixmap(QSize(size, size))
         return pix
+
+    def loadOverlayed(self, name, overlay = None, size = 128):
+        if not overlay:
+            return self.load(name, size)
+
+        icon = self.load(name, size)
+        overlay = self.load(overlay, 16)
+        overlay = overlay.scaled(QSize(16,16), Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        painter = QPainter(icon)
+        painter.drawPixmap(0, size - 16, overlay)
+        return icon
 
     def icon(self, pix, size=128):
         return QIcon(self.load(pix, size))
