@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'pds/ui/connectionitem.ui'
+# Form implementation generated from reading ui file 'ui/connectionitem.ui'
 #
-# Created: Wed Jan  5 15:02:32 2011
+# Created: Thu Jan  6 08:35:08 2011
 #      by: PyQt4 UI code generator 4.8.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -25,7 +25,7 @@ class Ui_ConnectionItem(object):
         self.gridLayout.setSpacing(0)
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
         self.mainLayout = QtGui.QHBoxLayout()
-        self.mainLayout.setSpacing(3)
+        self.mainLayout.setSpacing(6)
         self.mainLayout.setContentsMargins(3, -1, 3, -1)
         self.mainLayout.setObjectName(_fromUtf8("mainLayout"))
         self.icon = QtGui.QLabel(ConnectionItem)
