@@ -24,6 +24,7 @@ QIconLoader = QIconLoader()
 
 # NetworkManager
 from networkmanager import NetworkManager
+from networkmanager import ActiveConnection
 
 def get_icon(conn_type, state = False):
     state = "dialog-ok" if state else None
@@ -41,6 +42,8 @@ class ConnectionItem(QtGui.QWidget, Ui_ConnectionItem):
     def __init__(self, parent, connection, state):
         QtGui.QWidget.__init__(self, parent)
         self.setupUi(self)
+        self.parent = parent
+        self.connection = connection
 
         self.icon.setPixmap(get_icon(connection.settings.conn_type, state))
         self.name.setText(unicode(connection.settings.id))
@@ -49,8 +52,12 @@ class ConnectionItem(QtGui.QWidget, Ui_ConnectionItem):
         if state:
             self.button.setText("Disconnect")
 
-        self.button.clicked.connect(lambda: parent.show_message("%s clicked." % self.name.text()))
+        self.button.clicked.connect(lambda: self.parent.setState(self))
         self.toggleButtons()
+
+    def resizeEvent(self, event):
+        if self.parent.msgbox:
+            self.parent.msgbox._resizeCallBacks(event)
 
     def enterEvent(self, event):
         if not self.button.isVisible():
@@ -74,30 +81,56 @@ class QNetworkManager(QtGui.QListWidget):
         self.msgbox = None
         self.fillConnections()
 
+    def isActive(self, connection):
+        if not self.nm.active_connections:
+            return False
+        return map(lambda x: connection.settings.uuid == \
+                          x.connection.settings.uuid, self.nm.active_connections)[0]
+
     def fillConnections(self):
         actives = self.nm.active_connections
         for connection in self.nm.connections:
-            state = map(
-                    lambda x: connection.proxy.object_path == \
-                            x.connection.proxy.object_path, actives)[0]
+            state = self.isActive(connection)
             item = QtGui.QListWidgetItem()
             item.setSizeHint(QSize(200, 38))
             self.addItem(item)
             self.setItemWidget(item, ConnectionItem(self, connection, state))
 
-    def show_message(self, message):
+    def hideMessage(self):
+        if self.msgbox.isVisible():
+            return self.msgbox.animate(start = CURRENT, stop = BOTCENTER, direction = OUT)
+
+    def showMessage(self, message, timed=False):
         if not self.msgbox:
-            self.msgbox = PMessageBox(self)
+            self.msgbox = PMessageBox(self.viewport())
             self.msgbox.setStyleSheet(PMessageBox.Style)
 
         token = False
         if self.msgbox.isVisible():
-            token = self.msgbox.animate(start = CURRENT, stop = BOTCENTER, direction = OUT)
+            token = self.hideMessage()
             self.msgbox.registerFunction(FINISHED, lambda: self.msgbox.setMessage(message))
 
         if not token:
             self.msgbox.setMessage(message)
+
         self.msgbox.animate(start = BOTCENTER, stop = BOTCENTER, start_after = token)
+
+        if timed:
+            QTimer.singleShot(2000, self.hideMessage)
+
+    def setState(self, sender):
+        if self.isActive(sender.connection):
+            self.disconnect(sender.connection)
+            self.showMessage("Disconnecting %s..." % sender.connection.settings.id, True)
+        else:
+            self.connect(sender.connection)
+            self.showMessage("Connecting %s... " % sender.connection.settings.id)
+
+    def disconnect(self, connection):
+        self.nm.disconnect_connection_devices(connection)
+
+    def connect(self, connection):
+        self.nm.activate_connection(connection, guess_device = True)
 
 # Basic test app
 if __name__ == "__main__":
