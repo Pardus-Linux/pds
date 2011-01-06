@@ -43,6 +43,8 @@ class QIconLoader:
     SizeHuge        = 64
     SizeEnormous    = 128
 
+    TopLeft, TopRight, BottomLeft, BottomRight = range(4)
+
     def __init__(self, pds = None, debug = False):
 
         self.iconSizes = (128, 64, 48, 32, 22, 16)
@@ -235,15 +237,24 @@ class QIconLoader:
             return icon.pixmap(QSize(size, size))
         return pix
 
-    def loadOverlayed(self, name, overlay = None, size = 128):
+    def loadOverlayed(self, name, overlay = None, size = 128, overlay_size = 16, position = 2):
+
         if not overlay:
             return self.load(name, size)
 
+        position = {self.TopLeft:     (0, 0),
+                    self.TopRight:    (size-overlay_size, 0),
+                    self.BottomLeft:  (0, size-overlay_size),
+                    self.BottomRight: (size-overlay_size, size-overlay_size)}[position]
+
         icon = self.load(name, size)
-        overlay = self.load(overlay, 16)
-        overlay = overlay.scaled(QSize(16,16), Qt.KeepAspectRatio, Qt.SmoothTransformation)
+
+        overlay = self.load(overlay, overlay_size)
+        overlay = overlay.scaled(QSize(overlay_size, overlay_size), Qt.KeepAspectRatio, Qt.SmoothTransformation)
+
         painter = QPainter(icon)
-        painter.drawPixmap(0, size - 16, overlay)
+        painter.drawPixmap(position[0], position[1], overlay)
+
         return icon
 
     def icon(self, pix, size=128):
