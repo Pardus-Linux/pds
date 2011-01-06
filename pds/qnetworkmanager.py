@@ -17,7 +17,8 @@ from PyQt4.QtCore import *
 # UI
 from pds.ui_connectionitem import Ui_ConnectionItem
 
-# Pds QIconLoader
+# Pds
+from pds.gui import *
 from pds.qiconloader import QIconLoader
 QIconLoader = QIconLoader()
 
@@ -48,6 +49,7 @@ class ConnectionItem(QtGui.QWidget, Ui_ConnectionItem):
         if state:
             self.button.setText("Disconnect")
 
+        self.button.clicked.connect(lambda: parent.show_message("%s clicked." % self.name.text()))
         self.toggleButtons()
 
     def enterEvent(self, event):
@@ -61,11 +63,15 @@ class ConnectionItem(QtGui.QWidget, Ui_ConnectionItem):
     def toggleButtons(self, toggle=False):
         self.button.setVisible(toggle)
 
-class QNetworkManager(object):
+class QNetworkManager(QtGui.QListWidget):
 
-    def __init__(self, target):
+    def __init__(self, parent = None):
+        QtGui.QListWidget.__init__(self, parent)
+        self.setAlternatingRowColors(True)
+
         self.nm = NetworkManager()
-        self.widget = target
+
+        self.msgbox = None
         self.fillConnections()
 
     def fillConnections(self):
@@ -76,16 +82,28 @@ class QNetworkManager(object):
                             x.connection.proxy.object_path, actives)[0]
             item = QtGui.QListWidgetItem()
             item.setSizeHint(QSize(200, 38))
-            self.widget.addItem(item)
-            self.widget.setItemWidget(item, ConnectionItem(self.widget, connection, state))
+            self.addItem(item)
+            self.setItemWidget(item, ConnectionItem(self, connection, state))
+
+    def show_message(self, message):
+        if not self.msgbox:
+            self.msgbox = PMessageBox(self)
+            self.msgbox.setStyleSheet(PMessageBox.Style)
+
+        token = False
+        if self.msgbox.isVisible():
+            token = self.msgbox.animate(start = CURRENT, stop = BOTCENTER, direction = OUT)
+            self.msgbox.registerFunction(FINISHED, lambda: self.msgbox.setMessage(message))
+
+        if not token:
+            self.msgbox.setMessage(message)
+        self.msgbox.animate(start = BOTCENTER, stop = BOTCENTER, start_after = token)
 
 # Basic test app
 if __name__ == "__main__":
     import sys
     app = QtGui.QApplication(sys.argv)
-    list_widget = QtGui.QListWidget()
-    list_widget.setAlternatingRowColors(True)
-    QNetworkManager(list_widget)
-    list_widget.show()
+    nm = QNetworkManager()
+    nm.show()
     sys.exit(app.exec_())
 
