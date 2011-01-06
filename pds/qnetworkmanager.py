@@ -28,12 +28,12 @@ def get_icon(conn_type, state = False):
     state = "dialog-ok" if state else None
 
     CONN_TYPES = {"802-11-wireless":
-                    QIconLoader.loadOverlayed("network-wireless", state, 32),
+                    QIconLoader.loadOverlayed("network-wireless", state, 32, position = QIconLoader.TopLeft),
                   "802-3-ethernet" :
-                    QIconLoader.loadOverlayed("network-wired", state, 32)}
+                    QIconLoader.loadOverlayed("network-wired", state, 32, position = QIconLoader.TopLeft)}
 
     return CONN_TYPES.get(conn_type,
-                QIconLoader.loadOverlayed("network-wired", state, 32))
+                QIconLoader.loadOverlayed("network-wired", state, 32, position = QIconLoader.TopLeft))
 
 class ConnectionItem(QtGui.QWidget, Ui_ConnectionItem):
 
