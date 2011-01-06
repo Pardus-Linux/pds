@@ -20,6 +20,8 @@ from pds.ui_connectionitem import Ui_ConnectionItem
 # Pds
 from pds.gui import *
 from pds.qiconloader import QIconLoader
+from pds.qprogressindicator import QProgressIndicator
+
 QIconLoader = QIconLoader()
 
 # NetworkManager
@@ -45,15 +47,30 @@ class ConnectionItem(QtGui.QWidget, Ui_ConnectionItem):
         self.parent = parent
         self.connection = connection
 
+        self.busy = QProgressIndicator(self)
+        self.busy.setMinimumSize(QSize(32, 32))
+        self.mainLayout.insertWidget(0, self.busy)
+        self.busy.hide()
+
         self.icon.setPixmap(get_icon(connection.settings.conn_type, state))
         self.name.setText(unicode(connection.settings.id))
-        self.details.setText(unicode(connection.settings.conn_type))
 
         if state:
             self.button.setText("Disconnect")
 
+        self.details.setText(unicode(connection.settings.conn_type))
+
         self.button.clicked.connect(lambda: self.parent.setState(self))
+        self.button.clicked.connect(self.showBusy)
         self.toggleButtons()
+
+    def showBusy(self):
+        self.busy.busy()
+        self.icon.hide()
+
+    def setIcon(self, icon):
+        self.busy.hide()
+        self.icon.setPixmap(icon)
 
     def resizeEvent(self, event):
         if self.parent.msgbox:
@@ -85,7 +102,7 @@ class QNetworkManager(QtGui.QListWidget):
         if not self.nm.active_connections:
             return False
         return map(lambda x: connection.settings.uuid == \
-                          x.connection.settings.uuid, self.nm.active_connections)[0]
+                           x.connection.settings.uuid, self.nm.active_connections)[0]
 
     def fillConnections(self):
         actives = self.nm.active_connections
@@ -124,7 +141,7 @@ class QNetworkManager(QtGui.QListWidget):
             self.showMessage("Disconnecting %s..." % sender.connection.settings.id, True)
         else:
             self.connect(sender.connection)
-            self.showMessage("Connecting %s... " % sender.connection.settings.id)
+            self.showMessage("Connecting %s... " % sender.connection.settings.id, True)
 
     def disconnect(self, connection):
         self.nm.disconnect_connection_devices(connection)
