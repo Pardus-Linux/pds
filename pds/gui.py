@@ -314,6 +314,11 @@ from pds.qprogressindicator import QProgressIndicator
 
 class PMessageBox(PAbstractBox):
 
+    Style = """color:white;
+               background-color:rgba(0,0,0,200);
+               border: 1px solid rgba(0,0,0,200);
+               border-radius:4px;"""
+
     def __init__(self, parent):
         PAbstractBox.__init__(self, parent)
 
