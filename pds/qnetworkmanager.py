@@ -118,8 +118,10 @@ class QNetworkManager(QtGui.QListWidget):
         self.bus = dbus.SystemBus()
 
         self.nm_dbus = self.bus.get_object(NM_BUS_NAME, NM_OBJECT_PATH)
-        self.nm_interface = dbus.Interface(self.nm_dbus, NM_INTERF_NAME)
-        self.nm_interface.connect_to_signal("PropertiesChanged", self.handler)
+        nm_interface = dbus.Interface(self.nm_dbus, NM_INTERF_NAME)
+        nm_interface.connect_to_signal("PropertiesChanged", lambda *args:self.emit(SIGNAL("stateChanged()")))
+        nm_interface.connect_to_signal("DeviceAdded", lambda *args: self.showMessage("A new device added.", True))
+        nm_interface.connect_to_signal("DeviceRemoved", lambda *args: self.showMessage("A device removed.", True))
 
         self.timer = QTimer()
         self.timer.setSingleShot(True)
@@ -128,19 +130,19 @@ class QNetworkManager(QtGui.QListWidget):
         self.msgbox = None
         self.fillConnections()
 
-    def handler(self, *args):
-        self.emit(SIGNAL("stateChanged()"))
-        print 'DEBUG:', args
-
     def isActive(self, connection):
         if not self.nm.active_connections:
             return False
-        return len(filter(lambda x: x.connection.settings.uuid == \
-                                      connection.settings.uuid, self.nm.active_connections)) > 0
+        return len(self.filterByConnection(connection)) > 0
 
     def getState(self, connection):
+        return self.filterByConnection(connection)[0].state.value
+
+    def filterByConnection(self, connection):
         return filter(lambda x: x.connection.settings.uuid == \
-                                  connection.settings.uuid, self.nm.active_connections)[0].state.value
+                                  connection.settings.uuid and \
+                        unicode(x.connection.settings.id) == \
+                          unicode(connection.settings.id), self.nm.active_connections)
 
     def fillConnections(self):
         actives = self.nm.active_connections
@@ -152,7 +154,7 @@ class QNetworkManager(QtGui.QListWidget):
 
     def hideMessage(self):
         if self.msgbox.isVisible():
-            return self.msgbox.animate(start = CURRENT, stop = BOTCENTER, direction = OUT)
+            self.msgbox.animate(start = CURRENT, stop = BOTCENTER, direction = OUT)
 
     def showMessage(self, message, timed=False):
         if not self.msgbox:
