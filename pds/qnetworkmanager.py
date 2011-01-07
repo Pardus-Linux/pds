@@ -10,6 +10,10 @@
 # Software Foundation; either version 2 of the License, or (at your option)
 # any later version.
 
+# D-Bus
+import dbus
+from dbus.mainloop.qt import DBusQtMainLoop
+
 # Qt Libraries
 from PyQt4 import QtGui
 from PyQt4.QtCore import *
@@ -25,8 +29,13 @@ from pds.qprogressindicator import QProgressIndicator
 QIconLoader = QIconLoader()
 
 # NetworkManager
+from networkmanager import State
 from networkmanager import NetworkManager
-from networkmanager import ActiveConnection
+from networkmanager import ActiveConnectionState
+
+NM_BUS_NAME = 'org.freedesktop.NetworkManager'
+NM_OBJECT_PATH = '/org/freedesktop/NetworkManager'
+NM_INTERF_NAME = 'org.freedesktop.NetworkManager'
 
 def get_icon(conn_type, state = False):
     state = "dialog-ok" if state else None
@@ -41,9 +50,10 @@ def get_icon(conn_type, state = False):
 
 class ConnectionItem(QtGui.QWidget, Ui_ConnectionItem):
 
-    def __init__(self, parent, connection, state):
+    def __init__(self, parent, connection):
         QtGui.QWidget.__init__(self, parent)
         self.setupUi(self)
+
         self.parent = parent
         self.connection = connection
 
@@ -52,17 +62,27 @@ class ConnectionItem(QtGui.QWidget, Ui_ConnectionItem):
         self.mainLayout.insertWidget(0, self.busy)
         self.busy.hide()
 
-        self.icon.setPixmap(get_icon(connection.settings.conn_type, state))
-        self.name.setText(unicode(connection.settings.id))
-
-        if state:
-            self.button.setText("Disconnect")
-
-        self.details.setText(unicode(connection.settings.conn_type))
-
+        self.connect(parent, SIGNAL("stateChanged()"), self.updateState)
         self.button.clicked.connect(lambda: self.parent.setState(self))
-        self.button.clicked.connect(self.showBusy)
+
+        self.updateState()
         self.toggleButtons()
+
+    def updateState(self):
+        active = self.parent.isActive(self.connection)
+
+        if active:
+            state = self.parent.getState(self.connection)
+            if state == ActiveConnectionState.ACTIVATED.value:
+                self.setIcon(get_icon(self.connection.settings.conn_type, True))
+            elif state == ActiveConnectionState.ACTIVATING.value:
+                self.showBusy()
+        else:
+            self.setIcon(get_icon(self.connection.settings.conn_type, False))
+
+        self.name.setText(unicode(self.connection.settings.id))
+        self.details.setText(unicode(self.connection.settings.conn_type))
+        self.button.setText("Disconnect" if active else "Connect")
 
     def showBusy(self):
         self.busy.busy()
@@ -71,6 +91,7 @@ class ConnectionItem(QtGui.QWidget, Ui_ConnectionItem):
     def setIcon(self, icon):
         self.busy.hide()
         self.icon.setPixmap(icon)
+        self.icon.show()
 
     def resizeEvent(self, event):
         if self.parent.msgbox:
@@ -94,24 +115,40 @@ class QNetworkManager(QtGui.QListWidget):
         self.setAlternatingRowColors(True)
 
         self.nm = NetworkManager()
+        self.bus = dbus.SystemBus()
+
+        self.nm_dbus = self.bus.get_object(NM_BUS_NAME, NM_OBJECT_PATH)
+        self.nm_interface = dbus.Interface(self.nm_dbus, NM_INTERF_NAME)
+        self.nm_interface.connect_to_signal("PropertiesChanged", self.handler)
+
+        self.timer = QTimer()
+        self.timer.setSingleShot(True)
+        self.timer.timeout.connect(self.hideMessage)
 
         self.msgbox = None
         self.fillConnections()
 
+    def handler(self, *args):
+        self.emit(SIGNAL("stateChanged()"))
+        print 'DEBUG:', args
+
     def isActive(self, connection):
         if not self.nm.active_connections:
             return False
-        return map(lambda x: connection.settings.uuid == \
-                           x.connection.settings.uuid, self.nm.active_connections)[0]
+        return len(filter(lambda x: x.connection.settings.uuid == \
+                                      connection.settings.uuid, self.nm.active_connections)) > 0
+
+    def getState(self, connection):
+        return filter(lambda x: x.connection.settings.uuid == \
+                                  connection.settings.uuid, self.nm.active_connections)[0].state.value
 
     def fillConnections(self):
         actives = self.nm.active_connections
         for connection in self.nm.connections:
-            state = self.isActive(connection)
             item = QtGui.QListWidgetItem()
             item.setSizeHint(QSize(200, 38))
             self.addItem(item)
-            self.setItemWidget(item, ConnectionItem(self, connection, state))
+            self.setItemWidget(item, ConnectionItem(self, connection))
 
     def hideMessage(self):
         if self.msgbox.isVisible():
@@ -122,37 +159,31 @@ class QNetworkManager(QtGui.QListWidget):
             self.msgbox = PMessageBox(self.viewport())
             self.msgbox.setStyleSheet(PMessageBox.Style)
 
-        token = False
-        if self.msgbox.isVisible():
-            token = self.hideMessage()
-            self.msgbox.registerFunction(FINISHED, lambda: self.msgbox.setMessage(message))
-
-        if not token:
-            self.msgbox.setMessage(message)
-
-        self.msgbox.animate(start = BOTCENTER, stop = BOTCENTER, start_after = token)
+        self.msgbox.setMessage(message)
+        self.msgbox.animate(start = BOTCENTER, stop = BOTCENTER)
 
         if timed:
-            QTimer.singleShot(2000, self.hideMessage)
+            self.timer.start(2000)
 
     def setState(self, sender):
         if self.isActive(sender.connection):
             self.disconnect(sender.connection)
-            self.showMessage("Disconnecting %s..." % sender.connection.settings.id, True)
         else:
             self.connect(sender.connection)
-            self.showMessage("Connecting %s... " % sender.connection.settings.id, True)
 
     def disconnect(self, connection):
         self.nm.disconnect_connection_devices(connection)
+        self.showMessage("Disconnected from %s... " % connection.settings.id, True)
 
     def connect(self, connection):
         self.nm.activate_connection(connection, guess_device = True)
+        self.showMessage("Connecting to %s... " % connection.settings.id, True)
 
 # Basic test app
 if __name__ == "__main__":
     import sys
     app = QtGui.QApplication(sys.argv)
+    DBusQtMainLoop(set_as_default = True)
     nm = QNetworkManager()
     nm.show()
     sys.exit(app.exec_())
