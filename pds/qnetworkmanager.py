@@ -35,7 +35,11 @@ from networkmanager import ActiveConnectionState
 
 NM_BUS_NAME = 'org.freedesktop.NetworkManager'
 NM_OBJECT_PATH = '/org/freedesktop/NetworkManager'
-NM_INTERF_NAME = 'org.freedesktop.NetworkManager'
+NM_SETTINGS_OBJECT_PATH = '/org/freedesktop/NetworkManagerSettings'
+
+NM_SETTINGS = 'org.freedesktop.NetworkManagerSettings'
+NM_INTERFACE = 'org.freedesktop.NetworkManager'
+NM_SETTINGS_CONNECTION = 'org.freedesktop.NetworkManagerSettings.Connection'
 
 def get_icon(conn_type, state = False):
     state = "dialog-ok" if state else None
@@ -58,6 +62,12 @@ class ConnectionItem(QtGui.QWidget, Ui_ConnectionItem):
         self.parent = parent
         self.connection = connection
 
+        bus = parent.bus.get_object(NM_BUS_NAME, str(connection.proxy.object_path))
+        interface = dbus.Interface(bus, NM_SETTINGS_CONNECTION)
+
+        interface.connect_to_signal("Removed", parent.fillConnections)
+        interface.connect_to_signal("Updated", self.updateState)
+
         self.busy = QProgressIndicator(self)
         self.busy.setMinimumSize(QSize(32, 32))
         self.mainLayout.insertWidget(0, self.busy)
@@ -69,7 +79,7 @@ class ConnectionItem(QtGui.QWidget, Ui_ConnectionItem):
         self.updateState()
         self.toggleButtons()
 
-    def updateState(self):
+    def updateState(self, *args):
         if self.available is not True:
             return
 
@@ -119,15 +129,21 @@ class QNetworkManager(QtGui.QListWidget):
         self.setAlternatingRowColors(True)
 
         self.nm = NetworkManager()
-        self.bus = dbus.SystemBus()
 
-        self.nm_dbus = self.bus.get_object(NM_BUS_NAME, NM_OBJECT_PATH)
-        nm_interface = dbus.Interface(self.nm_dbus, NM_INTERF_NAME)
+        self.bus = dbus.SystemBus()
+        nm_bus = self.bus.get_object(NM_BUS_NAME, NM_OBJECT_PATH)
+
+        nm_interface = dbus.Interface(nm_bus, NM_INTERFACE)
         nm_interface.connect_to_signal("DeviceAdded", lambda *args: self.showMessage("A new device added.", True))
         nm_interface.connect_to_signal("DeviceAdded", self.fillConnections)
         nm_interface.connect_to_signal("DeviceRemoved", lambda *args: self.showMessage("A device removed.", True))
         nm_interface.connect_to_signal("DeviceRemoved", self.fillConnections)
         nm_interface.connect_to_signal("PropertiesChanged", lambda *args: self.emit(SIGNAL("stateChanged()")))
+
+        nm_settings_bus = self.bus.get_object(NM_BUS_NAME, NM_SETTINGS_OBJECT_PATH)
+        nm_settings = dbus.Interface(nm_settings_bus, NM_SETTINGS)
+        nm_settings.connect_to_signal("NewConnection", lambda *args: self.showMessage("A new connection added.", True))
+        nm_settings.connect_to_signal("NewConnection", self.fillConnections)
 
         self.timer = QTimer()
         self.timer.setSingleShot(True)
