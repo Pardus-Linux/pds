@@ -54,6 +54,7 @@ class ConnectionItem(QtGui.QWidget, Ui_ConnectionItem):
         QtGui.QWidget.__init__(self, parent)
         self.setupUi(self)
 
+        self.available = True
         self.parent = parent
         self.connection = connection
 
@@ -69,6 +70,9 @@ class ConnectionItem(QtGui.QWidget, Ui_ConnectionItem):
         self.toggleButtons()
 
     def updateState(self):
+        if self.available is not True:
+            return
+
         active = self.parent.isActive(self.connection)
 
         if active:
@@ -119,9 +123,11 @@ class QNetworkManager(QtGui.QListWidget):
 
         self.nm_dbus = self.bus.get_object(NM_BUS_NAME, NM_OBJECT_PATH)
         nm_interface = dbus.Interface(self.nm_dbus, NM_INTERF_NAME)
-        nm_interface.connect_to_signal("PropertiesChanged", lambda *args:self.emit(SIGNAL("stateChanged()")))
         nm_interface.connect_to_signal("DeviceAdded", lambda *args: self.showMessage("A new device added.", True))
+        nm_interface.connect_to_signal("DeviceAdded", self.fillConnections)
         nm_interface.connect_to_signal("DeviceRemoved", lambda *args: self.showMessage("A device removed.", True))
+        nm_interface.connect_to_signal("DeviceRemoved", self.fillConnections)
+        nm_interface.connect_to_signal("PropertiesChanged", lambda *args: self.emit(SIGNAL("stateChanged()")))
 
         self.timer = QTimer()
         self.timer.setSingleShot(True)
@@ -144,13 +150,22 @@ class QNetworkManager(QtGui.QListWidget):
                         unicode(x.connection.settings.id) == \
                           unicode(connection.settings.id), self.nm.active_connections)
 
-    def fillConnections(self):
+    def fillConnections(self, *args):
+        self.clearList()
         actives = self.nm.active_connections
-        for connection in self.nm.connections:
+        for connection in self.nm.available_connections:
             item = QtGui.QListWidgetItem()
             item.setSizeHint(QSize(200, 38))
             self.addItem(item)
             self.setItemWidget(item, ConnectionItem(self, connection))
+
+    def clearList(self):
+        for i in range(self.count()):
+            item = self.item(i)
+            widget = self.itemWidget(item)
+            widget.available = False
+            del widget, item
+        self.clear()
 
     def hideMessage(self):
         if self.msgbox.isVisible():
@@ -178,7 +193,7 @@ class QNetworkManager(QtGui.QListWidget):
         self.showMessage("Disconnected from %s... " % connection.settings.id, True)
 
     def connect(self, connection):
-        self.nm.activate_connection(connection, guess_device = True)
+        self.nm.activate_connection(connection)
         self.showMessage("Connecting to %s... " % connection.settings.id, True)
 
 # Basic test app
