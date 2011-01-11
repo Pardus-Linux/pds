@@ -3,7 +3,7 @@
 
 # Pardus Desktop Services
 
-# Copyright (C) 2010, TUBITAK/UEKAE
+# Copyright (C) 2010-2011, TUBITAK/UEKAE
 # 2010 - Gökçen Eraslan <gokcen:pardus.org.tr>
 # 2010 - Gökmen Göksel <gokmen:pardus.org.tr>
 
@@ -68,64 +68,4 @@ class PApplicationContainer(Qt.QX11EmbedContainer):
             return False
         return not self._proc.state() == Qt.QProcess.NotRunning
 
-class PNetworkManager(PApplicationContainer):
-    def __init__(self, parent = None):
-        PApplicationContainer.__init__(self, parent)
 
-    def startNetworkManager(self):
-        ret = self.start("nm-connection-editor", ("--winid", str(self.winId())))
-
-        if ret[0]:
-            self.setMinimumSize(Qt.QSize(450, 200))
-            self.show()
-
-        return ret
-
-class PMplayer(PApplicationContainer):
-    def __init__(self, parent = None):
-        PApplicationContainer.__init__(self, parent)
-
-        if parent:
-            parent.closeEvent = self.closeEvent
-
-    def openMedia(self, path):
-        ret = self.start("mplayer", ("-wid", str(self.winId()), path))
-
-        if ret[0]:
-            self.show()
-
-        return ret
-
-class TestUI(Qt.QWidget):
-    def __init__(self, parent=None):
-        Qt.QWidget.__init__(self, parent)
-        self.layout = Qt.QGridLayout(self)
-
-        self.pushbutton = Qt.QPushButton("Open Media", self)
-        self.layout.addWidget(self.pushbutton)
-
-        self.mplayer = PMplayer(self)
-        self.layout.addWidget(self.mplayer)
-
-        self.pushbutton.clicked.connect(self.getMedia)
-
-    def getMedia(self):
-        self.mplayer.openMedia(
-                Qt.QFileDialog.getOpenFileName(self,
-                    "Open Media", "/", "Media Files (*.ogv *.mov *.avi)"))
-
-if __name__ == "__main__":
-    import sys
-
-    app = Qt.QApplication(sys.argv)
-
-    # Network Manager Usage
-    # ui = PNetworkManager()
-    # ui.startNetworkManager()
-
-    ui = TestUI()
-    ui.show()
-
-    app.lastWindowClosed.connect(sys.exit)
-
-    app.exec_()

@@ -10,10 +10,10 @@
 # Software Foundation; either version 2 of the License, or (at your option)
 # any later version.
 
-from time import time
-
-from PyQt4 import QtCore, QtGui
 import pds
+
+from time import time
+from PyQt4 import QtCore, QtGui
 from pds.qiconloader import QIconLoader
 
 class Ui_Test(object):

@@ -10,8 +10,8 @@
 # Software Foundation; either version 2 of the License, or (at your option)
 # any later version.
 
-from pds.quniqueapp import QUniqueApplication
 import sys
+from pds.quniqueapp import QUniqueApplication
 
 app = QUniqueApplication(sys.argv, catalog = 'test-app')
 

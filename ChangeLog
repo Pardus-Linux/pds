@@ -1,0 +1,321 @@
+2011-01-11 Gökmen Göksel <gokmen@pardus.org.tr>
+         * - Alternative overlay icon for old style named icon themes like Tango on Corporate2 
+
+2011-01-11 Gökmen Göksel <gokmen@pardus.org.tr>
+         * - Check device before trying to connect 
+
+2011-01-10 Gökmen Göksel <gokmen@pardus.org.tr>
+         * - Follow connection changes and update the list...
+
+2011-01-10 Gökmen Göksel <gokmen@pardus.org.tr>
+         * - Update corresponding list in device changes 
+
+2011-01-07 Gökmen Göksel <gokmen@pardus.org.tr>
+         * - Follow device changes, we need to hide connections if connection has an interface and this interface is not available.. 
+
+2011-01-07 Gökmen Göksel <gokmen@pardus.org.tr>
+         * - Follow NetworkManager interface over D-Bus to update connection list for changes 
+
+2011-01-06 Gökmen Göksel <gokmen@pardus.org.tr>
+         * - Show busy indicator.. 
+
+2011-01-06 Gökmen Göksel <gokmen@pardus.org.tr>
+         * - Set connection state 
+
+2011-01-06 Gökmen Göksel <gokmen@pardus.org.tr>
+         * - Use PMessageBox for notification, make QNetworkManager a QListWidget 
+
+2011-01-06 Gökmen Göksel <gokmen@pardus.org.tr>
+         * - Add basic default stylesheet 
+
+2011-01-06 Gökmen Göksel <gokmen@pardus.org.tr>
+         * - Use TopLeft for overlay icons 
+
+2011-01-06 Gökmen Göksel <gokmen@pardus.org.tr>
+         * - Fix spacing 
+
+2011-01-06 Gökmen Göksel <gokmen@pardus.org.tr>
+         * - Support to define position of overlay icon 
+
+2011-01-05 Gökmen Göksel <gokmen@pardus.org.tr>
+         * - QNetworkManager, a new widget to show/change_states of network profiles from NetworkManager backend. 
+
+2011-01-05 Gökmen Göksel <gokmen@pardus.org.tr>
+         * - uis under ui directory 
+
+2011-01-05 Gökmen Göksel <gokmen@pardus.org.tr>
+         * - Add loadOverlay method to load overlayed icons 
+
+2010-12-01 Gökmen Göksel <gokmen@pardus.org.tr>
+         * rename 
+
+2010-12-01 Gökmen Göksel <gokmen@pardus.org.tr>
+         * ChangeLog added, ready for 1.2.1 
+
+2010-11-29 Gökmen Göksel <gokmen@pardus.org.tr>
+         * - shadow support added for mainwidget 
+
+2010-11-12 renan.cakirerk
+         * no need to delete later by gokmen
+
+2010-11-12 Gökmen Göksel <gokmen@pardus.org.tr>
+         * Much better garbage collection :) ... 
+
+2010-11-12 Gökmen Göksel <gokmen@pardus.org.tr>
+         * Update MANIFEST 
+
+2010-11-12 Gökmen Göksel <gokmen@pardus.org.tr>
+         * fix version string 
+
+2010-11-11 Gökmen Göksel <gokmen@pardus.org.tr>
+         * Fix icon issues 
+
+2010-11-11 Gökmen Göksel <gokmen@pardus.org.tr>
+         * Thread module added, PMessageBox fixed 
+
+2010-11-11 Gökmen Göksel <gokmen@pardus.org.tr>
+         * take care all errors.. 
+
+2010-11-10 Gökmen Göksel <gokmen@pardus.org.tr>
+         * Test application added for testing all features that we provide with Pds.Gui module 
+
+2010-11-09 Gökmen Göksel <gokmen@pardus.org.tr>
+         * Update MANIFEST 
+
+2010-11-09 Gökmen Göksel <gokmen@pardus.org.tr>
+         * Bump version string 
+
+2010-11-08 Gökmen Göksel <gokmen@pardus.org.tr>
+         * Use system palette text color if none given
+         * add wrapper method busy
+
+2010-11-04 Gökmen Göksel <gokmen@pardus.org.tr>
+         * color selectable 
+
+2010-11-04 Gökmen Göksel <gokmen@pardus.org.tr>
+         * Added feature to disable overlay style 
+
+2010-11-02 Gökmen Göksel <gokmen@pardus.org.tr>
+         * Test UI added for detailed example 
+
+2010-11-01 Gökmen Göksel <gokmen@pardus.org.tr>
+         * PApplicationContainer for embedding X11 applications to Qt Applications easily. 
+
+2010-10-27 Gökmen Göksel <gokmen@pardus.org.tr>
+         * cosmetic 
+
+2010-10-26 Gökmen Göksel <gokmen@pardus.org.tr>
+         * Add QProgressIndicator which is Qt Painter based animated busy indicator instead of using ugly gifs. 
+
+2010-10-20 Gökmen Göksel <gokmen@pardus.org.tr>
+         * Check last direction 
+
+2010-10-20 Gökmen Göksel <gokmen@pardus.org.tr>
+         * 1.0.0 
+
+2010-10-04 igungor
+         * E devs have started to export ICON_THEME as E_ICON_THEME, we dont need to patch enlightenment anymore hehe.
+
+2010-10-03 Gökmen Göksel <gokmen@pardus.org.tr>
+         * Support for disabling parent widget at shown. 
+
+2010-10-03 Gökmen Göksel <gokmen@pardus.org.tr>
+         * make public; animation and duration 
+
+2010-10-03 Gökmen Göksel <gokmen@pardus.org.tr>
+         * Run FINISHED call backs in shown if animations are disabled. 
+
+2010-10-03 Gökmen Göksel <gokmen@pardus.org.tr>
+         * No need to call parent's resize event twice. 
+
+2010-10-03 Gökmen Göksel <gokmen@pardus.org.tr>
+         * Seperate private and public variables/methods 
+
+2010-09-30 Gökmen Göksel <gokmen@pardus.org.tr>
+         * Support for registering resize functions, support for disabling animations. 
+
+2010-09-28 Gökmen Göksel <gokmen@pardus.org.tr>
+         * Re-set old settings after deleting the QTimeLine objects. 
+
+2010-09-28 Gökmen Göksel <gokmen@pardus.org.tr>
+         * It is safe to delete objects when their jobs are finished .
+
+2010-09-27 Gökmen Göksel <gokmen@pardus.org.tr>
+         * Check old animation state before connecting them. If its already finished just start the new one. 
+
+2010-09-24 Gökmen Göksel <gokmen@pardus.org.tr>
+         * Last changes. 
+
+2010-09-24 Gökmen Göksel <gokmen@pardus.org.tr>
+         * Resize callbacks are not needed anymore 
+
+2010-09-24 Gökmen Göksel <gokmen@pardus.org.tr>
+         * FIXME 32000
+
+2010-09-24 Gökmen Göksel <gokmen@pardus.org.tr>
+         * Callback functions problem is now fixed
+         * Its ready to use
+         * Documentation added
+
+2010-09-23 Gökmen Göksel <gokmen@pardus.org.tr>
+         * Support for starting animation after an animation finish its jobs, support for enabling or disabling the overlay animation (shit nvidia) 
+
+2010-09-21 Gökmen Göksel <gokmen@pardus.org.tr>
+         * Fade animate for overlay 
+
+2010-09-21 Gökmen Göksel <gokmen@pardus.org.tr>
+         * Update widget position when parents resize event called. 
+
+2010-09-21 Gökmen Göksel <gokmen@pardus.org.tr>
+         * more complex, fast enough. 
+
+2010-09-17 Gökmen Göksel <gokmen@pardus.org.tr>
+         * update example, a little time left for implementing with pm. 
+
+2010-09-02 Gökmen Göksel <gokmen@pardus.org.tr>
+         * Fix Python 2.7 and QSettings issues .
+
+2010-08-13 Gökmen Göksel <gokmen@pardus.org.tr>
+         * not yet 
+
+2010-08-13 Gökmen Göksel <gokmen@pardus.org.tr>
+         * better .
+
+2010-08-13 Gökmen Göksel <gokmen@pardus.org.tr>
+         * overlay support for pds message box, it is in progress still .
+
+2010-07-29 Gökmen Göksel <gokmen@pardus.org.tr>
+         * UEKAE gururla sunar; PDS PMessageBox \o/ 
+
+2010-07-28 Gökmen Göksel <gokmen@pardus.org.tr>
+         * Someting experimental, actually it is nothing at all. 
+
+2010-07-21 Gökmen Göksel <gokmen@pardus.org.tr>
+         * We need to check KDE_SESSION_VERSION since KDE 4.5 does not set DESKTOP_SESSION variable. 
+
+2010-07-05 Gökmen Göksel <gokmen@pardus.org.tr>
+         * If no desktop session defined fallback to systems default desktop enviorenment 
+
+2010-06-16 igungor
+         * Add Enlightenment icon theme support. Package manager can show the icons on Enlightenment now.
+         * This patch is dependent on Enlightenment export-icon-theme.patch.
+
+2010-05-26 Gökmen Göksel <gokmen@pardus.org.tr>
+         * 1.0.1 
+
+2010-05-25 Gökmen Göksel <gokmen@pardus.org.tr>
+         * Use unicode for PyNotify 
+
+2010-05-10 Gökmen Göksel <gokmen@pardus.org.tr>
+         * From now there is two different i18n support in Pds; first one comes from gettext Pds.i18n and the second one from session Pds.session.i18n. Easy to develop :) 
+
+2010-04-30 Gökmen Göksel <gokmen@pardus.org.tr>
+         * Ready to package.. 
+
+2010-04-20 Gökmen Göksel <gokmen@pardus.org.tr>
+         * Support for changing language 
+
+2010-04-13 Gökmen Göksel <gokmen@pardus.org.tr>
+         * Avoid importing not needed libraries
+         * Update MANIFEST
+
+2010-04-13 Gökmen Göksel <gokmen@pardus.org.tr>
+         * seperate Pardus Desktop Services 
+
+2010-04-08 Gökmen Göksel <gokmen@pardus.org.tr>
+         * Add pynotify support 
+
+2010-04-08 Gökmen Göksel <gokmen@pardus.org.tr>
+         * Support for extra icons which are not in theme directory 
+
+2010-04-08 Gökmen Göksel <gokmen@pardus.org.tr>
+         * use QLocalServer instead of Tcp ;) 
+
+2010-04-08 onur
+         * sinsi commit to get into AUTORS file
+
+2010-04-06 Gökmen Göksel <gokmen@pardus.org.tr>
+         * Let Ctrl+C works 
+
+2010-04-06 Gökmen Göksel <gokmen@pardus.org.tr>
+         * QUniqueApplication: Like KUniqueApplication provides unique applications and has tcp socket feature for instance calls
+
+2010-04-01 Gökmen Göksel <gokmen@pardus.org.tr>
+         * much better, enable debug in test by default 
+
+2010-04-01 Gökmen Göksel <gokmen@pardus.org.tr>
+         * rewrite pds log file for each run 
+
+2010-04-01 Gökmen Göksel <gokmen@pardus.org.tr>
+         * look for each icons deeply 
+
+2010-03-31 Gökmen Göksel <gokmen@pardus.org.tr>
+         * qcompleter support for avaliable icons, fix set methods for intherited icon themes 
+
+2010-03-31 Gökmen Göksel <gokmen@pardus.org.tr>
+         * we need a qstring not a str 
+
+2010-03-31 Gökmen Göksel <gokmen@pardus.org.tr>
+         * fix for non xdg desktop 
+
+2010-03-30 Gökmen Göksel <gokmen@pardus.org.tr>
+         * dist thing and manifest 
+
+2010-03-30 Gökmen Göksel <gokmen@pardus.org.tr>
+         * ready to package 
+
+2010-03-30 Gökmen Göksel <gokmen@pardus.org.tr>
+         * things for release 
+
+2010-03-30 Gökmen Göksel <gokmen@pardus.org.tr>
+         * sync pds 
+
+2010-03-29 Gökmen Göksel <gokmen@pardus.org.tr>
+         * forceCache support for frequently used icons 
+
+2010-03-26 Gökmen Göksel <gokmen@pardus.org.tr>
+         * also check for inherit property in index.theme 
+
+2010-03-26 Gökmen Göksel <gokmen@pardus.org.tr>
+         * get all available icons 
+
+2010-03-26 Gökmen Göksel <gokmen@pardus.org.tr>
+         * typo 
+
+2010-03-26 Gökmen Göksel <gokmen@pardus.org.tr>
+         * merge changes from pm 
+
+2010-03-22 Gökmen Göksel <gokmen@pardus.org.tr>
+         * use pixmapcache for all possible icons 
+
+2010-03-19 Gökmen Göksel <gokmen@pardus.org.tr>
+         * support for size 
+
+2010-03-19 Gökmen Göksel <gokmen@pardus.org.tr>
+         * i18n like ki18n way
+         * QIcon loader template 
+
+2010-03-18 Gökmen Göksel <gokmen@pardus.org.tr>
+         * Sometimes kdeglobals stores values without quotes 
+
+2010-03-18 Gökmen Göksel <gokmen@pardus.org.tr>
+         * support for different catalogs 
+
+2010-03-17 Gökmen Göksel <gokmen@pardus.org.tr>
+         * need to find a general solution .
+
+2010-03-17 Gökmen Göksel <gokmen@pardus.org.tr>
+         * typo 
+
+2010-03-17 Gökmen Göksel <gokmen@pardus.org.tr>
+         * basic test 
+
+2010-03-17 Gökmen Göksel <gokmen@pardus.org.tr>
+         * define methods for different desktop environments 
+
+2010-03-16 Gökmen Göksel <gokmen@pardus.org.tr>
+         * Add README 
+
+2010-03-16 Gökmen Göksel <gokmen@pardus.org.tr>
+         * A new project named Pardus Desktop Services, v 0.1 beta \o/ 
+

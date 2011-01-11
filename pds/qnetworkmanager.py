@@ -19,7 +19,7 @@ from PyQt4 import QtGui
 from PyQt4.QtCore import *
 
 # UI
-from pds.ui_connectionitem import Ui_ConnectionItem
+from pds.ui.ui_connectionitem import Ui_ConnectionItem
 
 # Pds
 from pds.gui import *

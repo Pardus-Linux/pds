@@ -11,7 +11,7 @@
 
 from PyQt4 import QtCore, QtGui
 from pds.gui import *
-from pds.ui_gui import Ui_PdsTest
+from pds.tests.ui_gui import Ui_PdsTest
 
 class PTestUI(QtGui.QWidget):
 
