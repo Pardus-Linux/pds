@@ -42,7 +42,7 @@ NM_INTERFACE = 'org.freedesktop.NetworkManager'
 NM_SETTINGS_CONNECTION = 'org.freedesktop.NetworkManagerSettings.Connection'
 
 def get_icon(conn_type, state = False):
-    state = "dialog-ok" if state else None
+    state = ("dialog-ok", "ok") if state else None
 
     CONN_TYPES = {"802-11-wireless":
                     QIconLoader.loadOverlayed("network-wireless", state, 32, position = QIconLoader.TopLeft),
