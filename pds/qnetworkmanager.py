@@ -169,7 +169,7 @@ class QNetworkManager(QtGui.QListWidget):
     def fillConnections(self, *args):
         self.clearList()
         actives = self.nm.active_connections
-        for connection in self.nm.available_connections:
+        for connection in self.nm.connections:
             item = QtGui.QListWidgetItem()
             item.setSizeHint(QSize(200, 38))
             self.addItem(item)
@@ -209,8 +209,11 @@ class QNetworkManager(QtGui.QListWidget):
         self.showMessage("Disconnected from %s... " % connection.settings.id, True)
 
     def connect(self, connection):
-        self.nm.activate_connection(connection)
-        self.showMessage("Connecting to %s... " % connection.settings.id, True)
+        if connection in self.nm.available_connections:
+            self.nm.activate_connection(connection)
+            self.showMessage("Connecting to %s... " % connection.settings.id, True)
+        else:
+            self.showMessage("Device is not ready for %s connection." % connection.settings.id, True)
 
 # Basic test app
 if __name__ == "__main__":
