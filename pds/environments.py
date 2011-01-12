@@ -30,7 +30,7 @@ class Kde4(DefaultDe):
     Name                 = 'kde'
     Version              = '4'
     VersionKey           = 'KDE_SESSION_VERSION'
-    ConfigPath           = '$HOME/.kde4/'
+    ConfigPath           = ('$HOME/.kde4/', '$HOME/.kde/')
     ConfigFile           = 'share/config/kdeglobals'
     ConfigType           = 'ini'
     ConfigBin            = 'kde4-config'

@@ -50,9 +50,10 @@ class Ui_Test(object):
         self.name.setCompleter(completer)
         self.getButton.setShortcut("Return")
 
-        print "Desktop Session : ", self.loader.pds.session.Name
-        print "Desktop Version : ", self.loader.pds.session.Version
-        print "Theme : ", self.loader.themeName
+        print "Desktop Session :", self.loader.pds.session.Name
+        print "Desktop Version :", self.loader.pds.session.Version
+        print "Icon Paths      :", self.loader.iconDirs
+        print "Theme           :", self.loader.themeName
 
     def showIcon(self):
         a = time()

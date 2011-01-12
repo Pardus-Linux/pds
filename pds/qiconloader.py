@@ -59,8 +59,8 @@ class QIconLoader:
         if dataDirs.isEmpty():
             dataDirs = QString('/usr/local/share/:/usr/share/')
 
-        dataDirs += ':' + self.pds.config_path + 'share'
         dataDirs.prepend(QDir.homePath() + ":")
+        dataDirs.prepend(self.pds.config_path + 'share:')
 
         if self.pds.session.ExtraDirs:
             dirs = QFile.decodeName(
@@ -81,9 +81,10 @@ class QIconLoader:
         self.themeName = self.pds.settings(self.pds.session.IconKey, \
                                            self.pds.session.DefaultIconTheme)
 
+        print "DD", dataDirs
         # Define icon directories
-        self.iconDirs =  filter(lambda x: path.exists(x), 
-                map(lambda x: path.join(unicode(x), 'icons'), 
+        self.iconDirs =  filter(lambda x: path.exists(x),
+                map(lambda x: path.join(unicode(x), 'icons'),
                     dataDirs.split(':')))
         self.iconDirs = list(set(self.iconDirs))
         logging.debug('Icon Dirs : %s' % ','.join(self.iconDirs))
@@ -191,7 +192,7 @@ class QIconLoader:
         if self.themeName:
             self._themes.append(self.themeName)
             for _name in name:
-                self.pixmap = self.findIconHelper(int(size), 
+                self.pixmap = self.findIconHelper(int(size),
                         self.themeName, _name)
                 if not self.pixmap.isNull():
                     break
@@ -199,7 +200,7 @@ class QIconLoader:
             for _name in name:
                 self._themes.extend(self.themeIndex.parents)
                 if len(self._themes) > 0:
-                    self.pixmap = self.findIconHelper(int(size), 
+                    self.pixmap = self.findIconHelper(int(size),
                             self._themes[0] ,_name)
                     if not self.pixmap.isNull():
                         break
@@ -218,7 +219,7 @@ class QIconLoader:
         if forceCache:
             for _name in name:
                 for _size in self.iconSizes:
-                    if (QPixmapCache.find('$qt'+str(_name)+str(_size), 
+                    if (QPixmapCache.find('$qt'+str(_name)+str(_size),
                         self.pixmap)):
                         logging.debug('Icon %s returned from cache' % _name)
                         return self.pixmap

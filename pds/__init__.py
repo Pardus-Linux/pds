@@ -185,7 +185,14 @@ class Pds:
 
     @property
     def config_path(self):
-        return self.session.ConfigPath.replace('$HOME', self.home)
+        cpaths = self.session.ConfigPath
+        if not type(cpaths) is tuple:
+            cpaths = (cpaths)
+
+        for cpath in cpaths:
+            rpath = cpath.replace('$HOME', self.home)
+            if path.exists(rpath):
+                return rpath
 
     @property
     def install_prefix(self):
