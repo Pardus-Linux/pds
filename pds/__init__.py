@@ -187,7 +187,7 @@ class Pds:
     def config_path(self):
         cpaths = self.session.ConfigPath
         if not type(cpaths) is tuple:
-            cpaths = (cpaths)
+            cpaths = [cpaths]
 
         for cpath in cpaths:
             rpath = cpath.replace('$HOME', self.home)

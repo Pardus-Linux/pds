@@ -81,7 +81,6 @@ class QIconLoader:
         self.themeName = self.pds.settings(self.pds.session.IconKey, \
                                            self.pds.session.DefaultIconTheme)
 
-        print "DD", dataDirs
         # Define icon directories
         self.iconDirs =  filter(lambda x: path.exists(x),
                 map(lambda x: path.join(unicode(x), 'icons'),
