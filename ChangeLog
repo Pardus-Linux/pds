@@ -1,3 +1,16 @@
+2011-01-15 Gökmen Göksel <gokmen@pardus.org.tr>
+         * - Add method to setOverlayClickMethod.. 
+
+2011-01-12 Gökmen Göksel <gokmen@pardus.org.tr>
+         * - Use list, remove debug 
+
+2011-01-12 Gökmen Göksel <gokmen@pardus.org.tr>
+         * - Support multiple config paths
+         * - Add .kde as KDE 4 Session config path for 2011
+
+2011-01-11 Gökmen Göksel <gokmen@pardus.org.tr>
+         * - 1.2.2 version is ready, test scripts seperated, QNetworkManager is ready to distribute.. 
+
 2011-01-11 Gökmen Göksel <gokmen@pardus.org.tr>
          * - Alternative overlay icon for old style named icon themes like Tango on Corporate2 
 
