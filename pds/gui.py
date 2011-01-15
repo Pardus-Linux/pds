@@ -310,6 +310,9 @@ class PAbstractBox(QtGui.QWidget):
         for func in self.__call_back_functions[direction]:
             func()
 
+    def setOverlayClickMethod(self, method):
+        self.__overlay.mousePressEvent = method
+
 from pds.qprogressindicator import QProgressIndicator
 
 class PMessageBox(PAbstractBox):
