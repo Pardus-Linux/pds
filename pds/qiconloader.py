@@ -45,14 +45,15 @@ class QIconLoader:
 
     TopLeft, TopRight, BottomLeft, BottomRight = range(4)
 
-    def __init__(self, pds = None, debug = False):
+    def __init__(self, pds = None, debug = False, forceCache = False):
 
         self.iconSizes = (128, 64, 48, 32, 22, 16)
 
         if not pds:
             pds = Pds(debug = debug)
-
         self.pds = pds
+
+        self._forceCache = forceCache
 
         # Get possible Data Directories
         dataDirs = QFile.decodeName(getenv('XDG_DATA_DIRS'))
@@ -215,7 +216,7 @@ class QIconLoader:
         self.pixmap = QPixmap()
         if not type(name) in (list, tuple):
             name = [str(name)]
-        if forceCache:
+        if forceCache or self._forceCache:
             for _name in name:
                 for _size in self.iconSizes:
                     if (QPixmapCache.find('$qt'+str(_name)+str(_size),
