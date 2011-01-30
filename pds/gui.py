@@ -31,7 +31,6 @@ BACKWARD = QtCore.QTimeLine.Backward
 # --------------------
 (IN, OUT, FINISHED) = range(3)
 # --------------------
-OVERLAY_OPACITY = 200
 
 class PAbstractBox(QtGui.QWidget):
     def __init__(self, parent):
@@ -53,6 +52,7 @@ class PAbstractBox(QtGui.QWidget):
         self.__last_start = TOPCENTER
         self.__last_stop = BOTCENTER
         self.__overlay_duration = 1400
+        self.__overlay_opacity = 200
         self._duration = 2000
         self._disable_parent_in_shown = False
 
@@ -150,7 +150,7 @@ class PAbstractBox(QtGui.QWidget):
                 self.registerFunction(OUT, lambda: self.__sceneF.setFrameRange(200, 0))
             else:
                 # Set overlay opacity
-                self.__overlay.setStyleSheet('background-color: rgba(0,0,0,%s)' % OVERLAY_OPACITY)
+                self.__overlay.setStyleSheet('background-color: rgba(0,0,0,%s)' % self.__overlay_opacity)
         else:
             self.__overlay.setAutoFillBackground(True)
 
@@ -312,6 +312,9 @@ class PAbstractBox(QtGui.QWidget):
 
     def setOverlayClickMethod(self, method):
         self.__overlay.mousePressEvent = method
+
+    def setOverlayOpacity(self, opacity = 200):
+        self.__overlay_opacity = opacity
 
 from pds.qprogressindicator import QProgressIndicator
 
