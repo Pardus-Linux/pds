@@ -69,16 +69,6 @@ class QIconLoader:
             for dirName in dirs:
                 dataDirs.append(':' + dirName + '/share')
 
-        defaultTheme = None
-        if path.exists(self.pds.session.DefaultIconFile):
-            fileInfo = QFileInfo(self.pds.session.DefaultIconFile)
-            dir = QDir(fileInfo.canonicalFilePath())
-            if fileInfo.exists():
-                defaultTheme = dir.dirName()
-
-        if not defaultTheme:
-            defaultTheme = self.pds.session.DefaultIconTheme
-
         self.themeName = self.pds.settings(self.pds.session.IconKey, \
                                            self.pds.session.DefaultIconTheme)
 
