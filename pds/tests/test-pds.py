@@ -45,7 +45,12 @@ class Ui_Test(object):
         self.gridLayout.addWidget(self.label, 1, 0, 1, 3)
         self.getButton.clicked.connect(self.showIcon)
         QtCore.QMetaObject.connectSlotsByName(Test)
-        self.loader = QIconLoader(debug = True)
+
+        Pds = pds.Pds(debug = True)
+        # Force to use Default Session for testing
+        # Pds.session = pds.DefaultDe
+
+        self.loader = QIconLoader(Pds, debug = True)
         completer = QtGui.QCompleter(self.loader._available_icons)
         self.name.setCompleter(completer)
         self.getButton.setShortcut("Return")
