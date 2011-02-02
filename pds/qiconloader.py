@@ -197,6 +197,8 @@ class QIconLoader:
                             self._themes[0] ,_name)
                     if not self.pixmap.isNull():
                         break
+        if not name:
+            return QPixmap()
         pixmapName = ''.join(('$qt', str(_name), str(size)))
         if not self.pixmap.isNull():
             logging.debug('Icon cached with name: %s ' % pixmapName)
