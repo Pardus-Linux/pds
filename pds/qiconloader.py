@@ -241,7 +241,7 @@ class QIconLoader:
                     self.BottomLeft:  (0, size-overlay_size),
                     self.BottomRight: (size-overlay_size, size-overlay_size)}[position]
 
-        icon = self.load(name, size)
+        icon = self.load(name, size).scaled(QSize(size, size), Qt.KeepAspectRatio, Qt.SmoothTransformation)
 
         overlay = self.load(overlay, overlay_size)
         overlay = overlay.scaled(QSize(overlay_size, overlay_size), Qt.KeepAspectRatio, Qt.SmoothTransformation)
