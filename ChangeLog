@@ -1,3 +1,27 @@
+2011-02-02 Gökmen Göksel <gokmen@pardus.org.tr>
+         * - If not icon name given just return a null QPixmap 
+
+2011-02-02 Gökmen Göksel <gokmen@pardus.org.tr>
+         * - Force to use given size, it fixes small overlay icon issues 
+
+2011-02-02 Gökmen Göksel <gokmen@pardus.org.tr>
+         * - Add option to update available icons list 
+
+2011-02-01 Gökmen Göksel <gokmen@pardus.org.tr>
+         * - Add test case 
+
+2011-01-31 Gökmen Göksel <gokmen@pardus.org.tr>
+         * - Code cleanup 
+
+2011-01-30 Gökmen Göksel <gokmen@pardus.org.tr>
+         * - Make overlay opacity optional 
+
+2011-01-29 Gökmen Göksel <gokmen@pardus.org.tr>
+         * - Add global forceCache option 
+
+2011-01-15 Gökmen Göksel <gokmen@pardus.org.tr>
+         * - Update ChangeLog, v 1.2.3 
+
 2011-01-15 Gökmen Göksel <gokmen@pardus.org.tr>
          * - Add method to setOverlayClickMethod.. 
 
