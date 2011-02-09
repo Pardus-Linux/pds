@@ -14,9 +14,13 @@ import sys
 import signal
 
 # PyQt4 Core Libraries
-from PyQt4.QtCore import QIODevice
-from PyQt4.QtGui import QApplication
 from PyQt4 import QtNetwork
+from PyQt4.QtGui import QApplication
+
+from PyQt4.QtCore import QLocale
+from PyQt4.QtCore import QIODevice
+from PyQt4.QtCore import QTranslator
+from PyQt4.QtCore import QLibraryInfo
 
 class QUniqueApplication(QApplication):
 
@@ -27,6 +31,9 @@ class QUniqueApplication(QApplication):
         self.control.newConnection.connect(self.onControlConnect)
         self.mainwindow = None
         self.catalog = '%s-pds.socket' % catalog
+
+        self._init_translations()
+
         self.readyToRun = self.control.listen(self.catalog)
 
         if not self.readyToRun:
@@ -35,6 +42,12 @@ class QUniqueApplication(QApplication):
             else:
                 self.control.removeServer(self.catalog)
                 self.readyToRun = self.control.listen(self.catalog)
+
+    def _init_translations(self):
+        self.qTrans = QTranslator()
+        self.qTrans.load("qt_" + QLocale.system().name(),
+                QLibraryInfo.location(QLibraryInfo.TranslationsPath))
+        self.installTranslator(self.qTrans)
 
     def setMainWindow(self, window):
         self.mainwindow = window
