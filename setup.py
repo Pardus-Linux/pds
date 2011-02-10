@@ -47,7 +47,7 @@ class Uninstall(Command):
             shutil.rmtree(project_dir)
 
 setup(name=PROJECT,
-      version='1.2.4',
+      version='1.2.5',
       description='Pds: Pardus Desktop Services',
       long_description='Pds is a Python Library that helps developers for '\
                        'creating desktop environment independet UI applications',
