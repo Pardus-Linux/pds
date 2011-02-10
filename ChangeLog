@@ -1,3 +1,10 @@
+2011-02-09 Gökmen Göksel <gokmen@pardus.org.tr>
+         * - Fix translations for Qt Applications, thanks Gökçen for the trick
+         * Bug fixed at http://bugs.pardus.org.tr/16767
+
+2011-02-03 Gökmen Göksel <gokmen@pardus.org.tr>
+         * - Update version to 1.2.4, ready to release 
+
 2011-02-02 Gökmen Göksel <gokmen@pardus.org.tr>
          * - If not icon name given just return a null QPixmap 
 
