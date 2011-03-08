@@ -15,12 +15,20 @@ from PyQt4.QtCore import Qt
 from PyQt4.QtCore import QSize
 from PyQt4.QtCore import QRect
 from PyQt4.QtCore import QEvent
+from PyQt4.QtCore import QTimer
+from PyQt4.QtCore import SIGNAL
+from PyQt4.QtCore import QTimeLine
+from PyQt4.QtCore import QEasingCurve
 
 from PyQt4.QtGui import QFrame
+from PyQt4.QtGui import QLabel
 from PyQt4.QtGui import QWidget
+from PyQt4.QtGui import QLineEdit
 from PyQt4.QtGui import QScrollArea
 from PyQt4.QtGui import QHBoxLayout
+from PyQt4.QtGui import QVBoxLayout
 from PyQt4.QtGui import QPushButton
+from PyQt4.QtGui import QMessageBox
 
 class Page:
     def __init__(self, widget, inMethod = None, outMethod = None):
@@ -42,27 +50,31 @@ class QPageWidget(QScrollArea):
         self.layout.setSpacing(0)
         self.layout.setMargin(0)
 
-        self.pages = []
+        self.__tmp_page = Page(QWidget(self.widget))
+        self.pages = [self.__tmp_page]
+
         self.current = 0
         self.setWidget(self.widget)
 
-    def addPage(self, widget, inMethod = None, outMethod = None):
-        widget.setMinimumSize(self.size())
-        self.pages.append(Page(widget, inMethod, outMethod))
-        self.layout.addWidget(widget)
+        self.__timeline = QTimeLine()
+        self.__timeline.setUpdateInterval(2)
 
-    def next(self):
-        self.current = max(0, min(self.current + 1, len(self.pages)))
-        self.horizontalScrollBar().setValue(self.current * self.width())
+        self.__timeline.frameChanged.connect(lambda x: self.horizontalScrollBar().setValue(x))
+        self.__timeline.finished.connect(self._animateFinished)
 
-    def prev(self):
-        self.current = min(len(self.pages), max(self.current - 1, 0))
+        self.setAnimation()
+        self.setDuration()
+
+    def _animateFinished(self):
+        self.pages[self.current].widget.setFocus()
         self.horizontalScrollBar().setValue(self.current * self.width())
 
     def event(self, event):
         if event.type() == QEvent.Resize:
             for page in self.pages:
                 page.widget.setMinimumSize(self.size())
+            self.viewport().setMinimumSize(self.size())
+            self.horizontalScrollBar().setValue(self.current * self.width())
         return QWidget.event(self, event)
 
     def keyPressEvent(self, event):
@@ -70,6 +82,59 @@ class QPageWidget(QScrollArea):
 
     def wheelEvent(self, event):
         pass
+
+    def addPage(self, widget, inMethod = None, outMethod = None):
+        self.pages.pop()
+
+        self.pages.append(Page(widget, inMethod, outMethod))
+        self.layout.addWidget(widget)
+
+        self.pages.append(self.__tmp_page)
+        self.layout.addWidget(self.__tmp_page.widget)
+
+        self.connect(widget, SIGNAL("pageNext()"), self.next)
+        self.connect(widget, SIGNAL("pagePrevious()"), self.prev)
+
+    def setAnimation(self, animation = 35):
+        self.__animation = animation
+        self.__timeline.setEasingCurve(QEasingCurve(self.__animation))
+
+    def setDuration(self, duration = 400):
+        self.__duration = duration
+        self.__timeline.setDuration(self.__duration)
+
+    def flipPage(self, direction=0):
+        self.current = min(max(0, self.current + direction), len(self.pages) - 2)
+        self.__timeline.setFrameRange(self.horizontalScrollBar().value(), self.current * self.width())
+        self.__timeline.start()
+
+    def next(self):
+        self.flipPage(1)
+
+    def prev(self):
+        self.flipPage(-1)
+
+class DemoPage(QWidget):
+    def __init__(self, parent = None, text = '', line_edit = ''):
+        QWidget.__init__(self, parent)
+        self.layout = QVBoxLayout(self)
+        self.layout.addWidget(QLabel(text, self))
+
+        self.line = QLineEdit(line_edit, self)
+        self.layout.addWidget(self.line)
+        if not line_edit:
+            self.line.hide()
+
+        btnNext = QPushButton("Next", self)
+        self.layout.addWidget(btnNext)
+        btnNext.clicked.connect(lambda: self.emit(SIGNAL("pageNext()")))
+
+        btnPrev = QPushButton("Previous", self)
+        self.layout.addWidget(btnPrev)
+        btnPrev.clicked.connect(lambda: self.emit(SIGNAL("pagePrevious()")))
+
+    def text(self):
+        return self.line.text()
 
 # Basic test app
 class Test(QWidget):
@@ -80,18 +145,21 @@ class Test(QWidget):
         pageWidget = QPageWidget(self)
         self.layout.addWidget(pageWidget)
 
-        btnNext = QPushButton("Next", self)
-        self.layout.addWidget(btnNext)
-        btnNext.clicked.connect(pageWidget.next)
-
-        btnPrev = QPushButton("Prev", self)
-        self.layout.addWidget(btnPrev)
-        btnPrev.clicked.connect(pageWidget.prev)
+        pageWidget.addPage(DemoPage(text="Welcome to QPageWidget demo !"))
 
         for color in ('red', 'green', 'blue'):
-            widget = QWidget()
+            widget = DemoPage(text="%s colored page..." % color)
             widget.setStyleSheet("background-color:%s" % color)
             pageWidget.addPage(widget)
+
+        line = DemoPage(text="You can embed all QWidgets as QPage, like QLineEdit", line_edit="Hello World")
+        pageWidget.addPage(line)
+
+        button = QPushButton("Click Me !", self)
+        button.clicked.connect(lambda: QMessageBox.information(self,
+                                "QPageWidget Information", line.text()))
+
+        pageWidget.addPage(button)
 
 if __name__ == "__main__":
     import sys
