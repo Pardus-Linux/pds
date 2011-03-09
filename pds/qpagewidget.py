@@ -80,7 +80,7 @@ class QPageWidget(QScrollArea):
         self.__tmp_page = Page(QWidget(self.widget))
         self.__pages = [self.__tmp_page]
         self.__current = 0
-        self.__last_direction = 1
+        self.__last = 0
 
         # Set main widget
         self.setWidget(self.widget)
@@ -100,13 +100,21 @@ class QPageWidget(QScrollArea):
         self.setDuration()
 
     def _animateFinished(self):
-        """ Its called by TimeLine to give focus current page, when animation finished. """
-        self.__pages[self.__current].widget.setFocus()
+        """ Its called by TimeLine when animation finished.
 
+        It first runs the outMethod of last Page and then the inMethod of current Page
+        Finally tt gives the focus to the current page and fixes the scrollBar
+        """
+        # Run last page's outMethod if exists
+        if self.__pages[self.__last].outMethod:
+            self.__pages[self.__last].outMethod()
+
+        # Run new page's inMethod if exists
         if self.__pages[self.__current].inMethod:
             self.__pages[self.__current].inMethod()
-        # if self.__pages[self.__last].outMethod:
-        #     self.__pages[self.__last].outMethod()
+
+        # Give focus to the current Page
+        self.__pages[self.__current].widget.setFocus()
 
         # Update scrollbar position for current page
         self.horizontalScrollBar().setValue(self.__current * self.width())
@@ -167,12 +175,17 @@ class QPageWidget(QScrollArea):
         self.connect(page.widget, SIGNAL("pagePrevious()"), self.prev)
         self.connect(page.widget, SIGNAL("setCurrent(int)"), self.setCurrent)
 
+    def __setCurrent(self, pageNumber):
+        """ Internal method to set current page index. """
+        self.__last = self.__current
+        self.__current = min(max(0, pageNumber), len(self.__pages) - 2)
+
     def setCurrent(self, pageNumber = 0):
         """ Set and flip the page with given pageNumber.
 
         pageNumber: index number of Page (default is 0)
         """
-        self.__current = min(max(0, pageNumber), len(self.__pages) - 2)
+        self.__setCurrent(pageNumber)
         self.flipPage()
 
     def getCurrent(self):
@@ -189,6 +202,8 @@ class QPageWidget(QScrollArea):
         animation: the number represents predefined QEasingCurves
                    List of predefined QEasingCurves can be found from:
                    http://doc.qt.nokia.com/4/qeasingcurve.html#Type-enum
+
+                   Default is QEasingCurve::InOutBack (35)
         """
         self.__animation = animation
         self.__timeline.setEasingCurve(QEasingCurve(self.__animation))
@@ -209,11 +224,17 @@ class QPageWidget(QScrollArea):
                     0: just flip to current page
                    +1: next page (if exists)
         """
+        # Check given direction
         direction = direction if direction == 0 else max(min(1, direction), -1)
-        self.__current = min(max(0, self.__current + direction), len(self.__pages) - 2)
-        self.__last_direction = direction
-        self.__timeline.setFrameRange(self.horizontalScrollBar().value(), self.__current * self.width())
-        self.__timeline.start()
+
+        # If direction is equal to zero no need to re-set current
+        if not direction == 0:
+            self.__setCurrent(self.__current + direction)
+
+        # If last page is different from new page, flip it !
+        if not self.__last == self.__current:
+            self.__timeline.setFrameRange(self.horizontalScrollBar().value(), self.__current * self.width())
+            self.__timeline.start()
 
     def next(self):
         """ Helper method to flip next page. """

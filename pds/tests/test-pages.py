@@ -45,7 +45,9 @@ class Test(QWidget):
         pageWidget = QPageWidget(self)
         self.layout.addWidget(pageWidget)
 
-        pageWidget.createPage(DemoPage(text="Welcome to QPageWidget demo !"))
+        pageWidget.createPage(DemoPage(text="Welcome to QPageWidget demo !"),
+                              outMethod = lambda: QMessageBox.information(self, "QPageWidget Information",
+                                                        "You just left the welcome page."))
 
         for color in ('red', 'green', 'blue'):
             widget = DemoPage(text="%s colored page..." % color)
@@ -53,15 +55,16 @@ class Test(QWidget):
             pageWidget.createPage(widget)
 
         line = DemoPage(text="You can embed all QWidgets as QPage, like QLineEdit", line_edit="Hello World")
-        pageWidget.createPage(line)
+        pageWidget.createPage(line, inMethod = lambda: QMessageBox.information(self, "QPageWidget Information",
+                                                        "You can set a messagebox text in this page."))
 
         button = QPushButton("Click Me !", self)
         button.clicked.connect(lambda: QMessageBox.information(self,
                                 "QPageWidget Information", line.text()))
-        button.clicked.connect(lambda: button.emit(SIGNAL("setCurrent(int)"), 0))
+        button.clicked.connect(lambda: button.emit(SIGNAL("setCurrent(int)"), 2))
 
-        pageWidget.createPage(button, inMethod=lambda: QMessageBox.information(self, "QPageWidget Information", 
-                                                        "This is a Test"))
+        pageWidget.createPage(button, inMethod=lambda: QMessageBox.information(self, "QPageWidget Information",
+                                                        "You reached the last page, after click the page button it goes back to the Green page."))
 
 if __name__ == "__main__":
     import sys
