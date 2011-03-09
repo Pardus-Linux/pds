@@ -75,7 +75,7 @@ class QPageWidget(QScrollArea):
                 page.widget.setMinimumSize(self.size())
             self.viewport().setMinimumSize(self.size())
             self.horizontalScrollBar().setValue(self.current * self.width())
-        return QWidget.event(self, event)
+        return QScrollArea.event(self, event)
 
     def keyPressEvent(self, event):
         pass
