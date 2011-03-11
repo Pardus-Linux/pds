@@ -18,11 +18,11 @@ from PyQt4.QtGui import QFrame
 from PyQt4.QtGui import QLabel
 from PyQt4.QtGui import QWidget
 from PyQt4.QtGui import QLineEdit
+from PyQt4.QtGui import QBoxLayout
 from PyQt4.QtGui import QScrollArea
-from PyQt4.QtGui import QHBoxLayout
-from PyQt4.QtGui import QVBoxLayout
 from PyQt4.QtGui import QPushButton
 from PyQt4.QtGui import QMessageBox
+from PyQt4.QtGui import QResizeEvent
 
 __author__      = "Gökmen Göksel"
 __email__       = "gokmen@pardus.org.tr"
@@ -57,9 +57,15 @@ class Page:
 class QPageWidget(QScrollArea):
     """ The QPageWidget provides a stack widget with animated page transitions. """
 
-    def __init__(self, parent = None):
-        """ Creates a new QPageWidget on given parent object. """
+    def __init__(self, parent = None, direction = "ltr", rtf = False):
+        """ Creates a new QPageWidget on given parent object. 
 
+        parent: QWidget parent
+        direction: "ltr" -> Left To Right
+                   "ttb" -> Top To Bottom
+        rtf: Return to first, if its True it flips to the first page 
+             when next page requested at the last page
+        """
         # First initialize, QPageWidget is based on QScrollArea
         QScrollArea.__init__(self, parent)
 
@@ -71,9 +77,21 @@ class QPageWidget(QScrollArea):
 
         # Main widget, which stores all Pages in it
         self.widget = QWidget(self)
-        self.layout = QHBoxLayout(self.widget)
+
+        # Layout based on QBoxLayout which supports Vertical or Horizontal layout
+        if direction == "ltr":
+            self.layout = QBoxLayout(QBoxLayout.LeftToRight, self.widget)
+            self.__scrollBar = self.horizontalScrollBar()
+            self.__base_value = self.width
+        else:
+            self.layout = QBoxLayout(QBoxLayout.TopToBottom, self.widget)
+            self.__scrollBar = self.verticalScrollBar()
+            self.__base_value = self.height
         self.layout.setSpacing(0)
         self.layout.setMargin(0)
+
+        # Return to first
+        self.__return_to_first = rtf
 
         # TMP_PAGE, its using as last page in stack
         # A workaround for a QScrollArea bug
@@ -90,12 +108,12 @@ class QPageWidget(QScrollArea):
         self.__timeline.setUpdateInterval(2)
 
         # Updates scrollbar position when frame changed
-        self.__timeline.frameChanged.connect(lambda x: self.horizontalScrollBar().setValue(x))
+        self.__timeline.frameChanged.connect(lambda x: self.__scrollBar.setValue(x))
 
         # End of the animation
         self.__timeline.finished.connect(self._animateFinished)
 
-        # Initializes default values
+        # Initialize animation
         self.setAnimation()
         self.setDuration()
 
@@ -117,7 +135,7 @@ class QPageWidget(QScrollArea):
         self.__pages[self.__current].widget.setFocus()
 
         # Update scrollbar position for current page
-        self.horizontalScrollBar().setValue(self.__current * self.width())
+        self.__scrollBar.setValue(self.__current * self.__base_value())
 
     def event(self, event):
         """ Overrides the main event handler to catch resize events """
@@ -132,7 +150,7 @@ class QPageWidget(QScrollArea):
             self.viewport().setMinimumSize(self.size())
 
             # Update scrollbar position for current page
-            self.horizontalScrollBar().setValue(self.__current * self.width())
+            self.__scrollBar.setValue(self.__current * self.__base_value())
 
         # Return the Event
         return QScrollArea.event(self, event)
@@ -179,6 +197,8 @@ class QPageWidget(QScrollArea):
         """ Internal method to set current page index. """
         self.__last = self.__current
         self.__current = min(max(0, pageNumber), len(self.__pages) - 2)
+        if pageNumber == len(self.__pages) - 1 and self.__return_to_first:
+            self.__current = 0
 
     def setCurrent(self, pageNumber = 0):
         """ Set and flip the page with given pageNumber.
@@ -233,7 +253,7 @@ class QPageWidget(QScrollArea):
 
         # If last page is different from new page, flip it !
         if not self.__last == self.__current:
-            self.__timeline.setFrameRange(self.horizontalScrollBar().value(), self.__current * self.width())
+            self.__timeline.setFrameRange(self.__scrollBar.value(), self.__current * self.__base_value())
             self.__timeline.start()
 
     def next(self):

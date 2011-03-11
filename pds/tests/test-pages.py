@@ -66,6 +66,20 @@ class Test(QWidget):
         pageWidget.createPage(button, inMethod=lambda: QMessageBox.information(self, "QPageWidget Information",
                                                         "You reached the last page, after click the page button it goes back to the Green page."))
 
+        pictureWidget = QPageWidget(self, direction = "ttb", rtf = True)
+        pictureWidget.setAnimation(38)
+        for i in ("darkred", "darkgreen", "lightblue", "orange", "yellow"):
+            label = QLabel(i, self)
+            label.setStyleSheet("background-color:%s" % i)
+            pictureWidget.createPage(label)
+
+        timer = QTimer(self)
+        timer.timeout.connect(pictureWidget.next)
+        timer.start(2000)
+
+        self.layout.addWidget(pictureWidget)
+
+
 if __name__ == "__main__":
     import sys
 
