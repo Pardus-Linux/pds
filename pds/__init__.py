@@ -151,7 +151,7 @@ class Pds:
                 env     = session.split('=')[1].strip()
             for de in Pds.SupportedDesktops:
                 if env:
-                    if de.Name == env:
+                    if env in de.SessionTypes or env == de.Name:
                         self._session = de
                 else:
                     if de.VersionKey:
@@ -161,7 +161,7 @@ class Pds:
                 self._session = DefaultDe
             else:
                 for de in Pds.SupportedDesktops:
-                    if de.Version == self.version and de.Name == env:
+                    if de.Version == self.version and (env in de.SessionTypes or env == de.Name):
                         self._session = de
         return self._session
 

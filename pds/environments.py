@@ -13,6 +13,7 @@
 
 class DefaultDe(object):
     Name                 = 'X11'
+    SessionTypes         = ()
     Version              = None
     VersionKey           = None
     ConfigPath           = '$HOME/.config'
@@ -28,6 +29,7 @@ class DefaultDe(object):
 
 class Kde4(DefaultDe):
     Name                 = 'kde'
+    SessionTypes         = ('kde-plasma')
     Version              = '4'
     VersionKey           = 'KDE_SESSION_VERSION'
     ConfigPath           = ('$HOME/.kde4/', '$HOME/.kde/')
