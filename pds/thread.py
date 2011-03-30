@@ -17,7 +17,8 @@ from PyQt4.QtCore import SLOT
 from PyQt4.QtCore import QThread
 
 class PThread(QThread):
-    def __init__(self, parent, action, callback=None, args=[], kwargs={}):
+    def __init__(self, parent, action, callback=None, \
+                 args=[], kwargs={}, exceptionHandler=None):
         QThread.__init__(self,parent)
 
         if callback:
@@ -26,11 +27,15 @@ class PThread(QThread):
         self.action = action
         self.args = args
         self.kwargs = kwargs
+        self.exceptionHandler = exceptionHandler
         self.data = None
 
     def run(self):
         try:
             self.data = self.action(*self.args, **self.kwargs)
+        except Exception, e:
+            if self.exceptionHandler:
+                self.exceptionHandler(e)
         finally:
             self.connect(self.parent(), SIGNAL("cleanUp()"), SLOT("deleteLater()"))
 
