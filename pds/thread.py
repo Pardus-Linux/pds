@@ -17,15 +17,15 @@ from PyQt4.QtCore import SLOT
 from PyQt4.QtCore import QThread
 
 class PThread(QThread):
-    def __init__(self, parent, action, callback, args=[], kwargs={}):
+    def __init__(self, parent, action, callback=None, args=[], kwargs={}):
         QThread.__init__(self,parent)
 
-        parent.connect(self, SIGNAL("finished()"), callback)
+        if callback:
+            parent.connect(self, SIGNAL("finished()"), callback)
 
         self.action = action
         self.args = args
         self.kwargs = kwargs
-        self.callback = callback
         self.data = None
 
     def run(self):
