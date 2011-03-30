@@ -123,6 +123,12 @@ class QPageWidget(QScrollArea):
         It first runs the outMethod of last Page and then the inMethod of current Page
         Finally tt gives the focus to the current page and fixes the scrollBar
         """
+
+        # Disable other widgets
+        for page in self.__pages:
+            if not page == self.__pages[self.__current]:
+                page.widget.setEnabled(False)
+
         # Run last page's outMethod if exists
         if self.__pages[self.__last].outMethod:
             self.__pages[self.__last].outMethod()
@@ -244,6 +250,10 @@ class QPageWidget(QScrollArea):
                     0: just flip to current page
                    +1: next page (if exists)
         """
+        # Enable all widgets
+        for page in self.__pages:
+            page.widget.setEnabled(True)
+
         # Check given direction
         direction = direction if direction == 0 else max(min(1, direction), -1)
 
