@@ -143,6 +143,9 @@ class QPageWidget(QScrollArea):
         # Update scrollbar position for current page
         self.__scrollBar.setValue(self.__current * self.__base_value())
 
+        # Emit currentChanged SIGNAL
+        self.emit(SIGNAL("currentChanged()"))
+
     def event(self, event):
         """ Overrides the main event handler to catch resize events """
         # Catch Resize event
