@@ -223,7 +223,17 @@ class QPageWidget(QScrollArea):
 
     def getCurrentWidget(self):
         """ Returns current page widget. """
-        return self.__pages[self.getCurrent()].widget
+        return self.getWidget(self.getCurrent())
+
+    def getWidget(self, pageNumber):
+        """ Returns widget for given page index 
+
+        pageNumber: index number of Page
+        """
+        try:
+            return self.__pages[pageNumber].widget
+        except:
+            return None
 
     def count(self):
         """ Returns number of pages. """
