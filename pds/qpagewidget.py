@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-"""QPageWidget provides wizard like animated stack widget."""
+""" QPageWidget provides wizard like animated stack widget. """
 
 # QtCore Libraries
 from PyQt4.QtCore import Qt
