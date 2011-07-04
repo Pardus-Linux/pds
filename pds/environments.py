@@ -62,7 +62,7 @@ class Xfce(DefaultDe):
     Version              = '4'
     ConfigPath           = '$HOME/.config/xfce4/'
     ConfigFile           = 'xfconf/xfce-perchannel-xml/xsettings.xml'
-    ConfigType           = 'xml'
+    ConfigType           = ''
     DefaultIconTheme     = 'hicolor'
     DefaultConfigPath    = '/etc/xdg/xfce4/%s' % ConfigFile
     IconKey              = 'IconThemeName'
@@ -75,4 +75,40 @@ class Enlightenment(DefaultDe):
     ConfigType           = 'env'
     DefaultIconTheme     = 'hicolor'
     IconKey              = 'E_ICON_THEME'
+
+class LXDE(DefaultDe):
+    Name                 = 'LXDE'
+    Version              = '0.5'
+    ConfigPath           = '$HOME/.config'
+    ConfigFile           = ''
+    ConfigType           = None
+    DefaultIconTheme     = 'oxygen'
+    IconKey              = 'theme/name'
+    DefaultIconFile      = '/usr/share/icons/lxde_pardus2011_menu.png'
+
+class Fluxbox(DefaultDe):
+    Name                 = 'fluxbox'
+    Version              = '1.3.1'
+    ConfigPath           = '$HOME/.config'
+    ConfigFile           = ''
+    ConfigType           = None
+    DefaultIconTheme     = 'oxygen'
+
+class Gnome(DefaultDe):
+    Name                 = 'gnome'
+    Version              = '2.32'
+    ConfigPath           = '$HOME/.gnome2'
+    ConfigFile           = ''
+    ConfigType           = None
+    DefaultIconTheme     = 'oxygen'
+
+
+class Gnome3(DefaultDe):
+    Name                 = 'gnome3'
+    SessionTypes         = ('gnome-shell')
+    Version              = '3.0'
+    ConfigPath           = '$HOME/.gnome2'
+    ConfigFile           = ''
+    ConfigType           = None
+    DefaultIconTheme     = 'oxygen'
 

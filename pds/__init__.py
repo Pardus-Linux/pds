@@ -30,7 +30,8 @@ from pds.environments import *
 
 class Pds:
 
-    SupportedDesktops = (DefaultDe, Kde4, Kde3, Xfce, Enlightenment)
+    SupportedDesktops = (DefaultDe, Kde4, Kde3, Xfce, Enlightenment, LXDE,
+                        Fluxbox, Gnome, Gnome3)
 
     def __init__(self, catalogName='', debug=False):
         self._session           = None
@@ -146,7 +147,7 @@ class Pds:
     def session(self):
         if not self._session:
             env = getenv('DESKTOP_SESSION')
-            if env == 'default':
+            if env == 'default' or not env or env == 'gnome':
                 session = readfile('/etc/default/desktop', DefaultDe.Name)
                 env     = session.split('=')[1].strip()
             for de in Pds.SupportedDesktops:
