@@ -61,7 +61,7 @@ class QIconLoader:
             dataDirs = QString('/usr/local/share/:/usr/share/')
 
         dataDirs.prepend(QDir.homePath() + ":")
-        dataDirs.prepend(self.pds.config_path + 'share:')
+        dataDirs.prepend(str(self.pds.config_path) + 'share:')
 
         if self.pds.session.ExtraDirs:
             dirs = QFile.decodeName(
