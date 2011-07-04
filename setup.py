@@ -1,6 +1,15 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+# Pardus Desktop Services
+# Copyright (C) 2011, TUBITAK/UEKAE
+# 2011 - Gökmen Göksel <gokmen:pardus.org.tr>
+
+# This program is free software; you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free
+# Software Foundation; either version 2 of the License, or (at your option)
+# any later version.
+
 # Python Libs
 import os
 import shutil
@@ -47,7 +56,7 @@ class Uninstall(Command):
             shutil.rmtree(project_dir)
 
 setup(name=PROJECT,
-      version='1.2.5',
+      version='1.2.6',
       description='Pds: Pardus Desktop Services',
       long_description='Pds is a Python Library that helps developers for '\
                        'creating desktop environment independet UI applications',

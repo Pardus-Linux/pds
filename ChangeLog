@@ -1,3 +1,59 @@
+2011-06-06 Gökmen Göksel <gokmen@pardus.org.tr>
+         * - We have to limit all sizes, not just minimum size.
+
+2011-05-18 Gökmen Göksel <gokmen@pardus.org.tr>
+         * - Add QProgressWidget, just a template for now 
+
+2011-05-18 Gökmen Göksel <gokmen@pardus.org.tr>
+         * - Make getWidget method flexible 
+
+2011-05-17 Gökmen Göksel <gokmen@pardus.org.tr>
+         * - emit 'currentChanged()' signal when something changed 
+
+2011-05-17 Gökmen Göksel <gokmen@pardus.org.tr>
+         * - getCurrentWidget helper method added ...
+
+2011-03-30 Gökmen Göksel <gokmen@pardus.org.tr>
+         * - Add option exceptionHandler 
+
+2011-03-30 Gökmen Göksel <gokmen@pardus.org.tr>
+         * - Make callback function optional 
+
+2011-03-30 Gökmen Göksel <gokmen@pardus.org.tr>
+         * - Disable all other widgets except the current one when animation is finished 
+
+2011-03-29 Gökmen Göksel <gokmen@pardus.org.tr>
+         * - Add additional SessionTypes variable to check possible environments names
+         * With KDE 4.6, KDE developers decided (!#?) to use "kde-plasma" as environment
+         * name instead of "kde", so one environment name is not enough to check current
+         * environment, SessionTypes variable solves this problem.
+
+2011-03-11 Gökmen Göksel <gokmen@pardus.org.tr>
+         * - Add option to select move direction LeftToRight (ltr) or TopToBottom(ttb)
+         * - Add option to return first page if next requested at the last page
+
+2011-03-09 Gökmen Göksel <gokmen@pardus.org.tr>
+         * - More documentation, in/out methods are working now ! 
+
+2011-03-09 Gökmen Göksel <gokmen@pardus.org.tr>
+         * - QPageWidget document completed
+         * - Test scripts moved to tests directory
+
+2011-03-09 Gökmen Göksel <gokmen@pardus.org.tr>
+         * - Shame on me. 
+
+2011-03-08 Gökmen Göksel <gokmen@pardus.org.tr>
+         * - Almost done, Test script should be updated. 
+
+2011-03-07 Gökmen Göksel <gokmen@pardus.org.tr>
+         * - QPageWidget : Simple PageWidget implementation, just the beginning 
+
+2011-02-10 Gökmen Göksel <gokmen@pardus.org.tr>
+         * - New release celebrates the 36000th commit ! 
+
+2011-02-10 Gökmen Göksel <gokmen@pardus.org.tr>
+         * - Update ChangeLog 
+
 2011-02-09 Gökmen Göksel <gokmen@pardus.org.tr>
          * - Fix translations for Qt Applications, thanks Gökçen for the trick
          * Bug fixed at http://bugs.pardus.org.tr/16767
