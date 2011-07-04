@@ -1,3 +1,12 @@
+2011-07-04 Gökmen Göksel <gokmen@pardus.org.tr>
+         * - Add COMAK developer's config_path fix 
+
+2011-07-04 Gökmen Göksel <gokmen@pardus.org.tr>
+         * - Add COMAK developer's environment patch to support LXDE, Fluxbox, Gnome and Gnome3 
+
+2011-07-04 Gökmen Göksel <gokmen@pardus.org.tr>
+         * - Latest changes, update ChangeLog 
+
 2011-06-06 Gökmen Göksel <gokmen@pardus.org.tr>
          * - We have to limit all sizes, not just minimum size.
 

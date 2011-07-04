@@ -4,6 +4,7 @@
 # Pardus Desktop Services
 # Copyright (C) 2010, TUBITAK/UEKAE
 # 2010 - Gökmen Göksel <gokmen:pardus.org.tr>
+# 2011 - Comak Developers <comak:pardus.org.tr>
 
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free
