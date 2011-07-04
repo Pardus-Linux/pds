@@ -63,7 +63,7 @@ class Xfce(DefaultDe):
     Version              = '4'
     ConfigPath           = '$HOME/.config/xfce4/'
     ConfigFile           = 'xfconf/xfce-perchannel-xml/xsettings.xml'
-    ConfigType           = ''
+    ConfigType           = 'xml'
     DefaultIconTheme     = 'hicolor'
     DefaultConfigPath    = '/etc/xdg/xfce4/%s' % ConfigFile
     IconKey              = 'IconThemeName'
