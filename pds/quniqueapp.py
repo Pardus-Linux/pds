@@ -10,6 +10,7 @@
 # Software Foundation; either version 2 of the License, or (at your option)
 # any later version.
 
+import os
 import sys
 import signal
 
@@ -30,7 +31,7 @@ class QUniqueApplication(QApplication):
         self.control = QtNetwork.QLocalServer(self)
         self.control.newConnection.connect(self.onControlConnect)
         self.mainwindow = None
-        self.catalog = '%s-pds.socket' % catalog
+        self.catalog = '%s-pds-%s.socket' % (catalog, os.geteuid())
 
         self._init_translations()
 
