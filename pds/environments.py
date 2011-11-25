@@ -24,6 +24,7 @@ class DefaultDe(object):
     DefaultIconTheme     = 'hicolor'
     DefaultIconFile      = ''
     DefaultConfigPath    = None
+    GetIconThemeCommand  = None
     ExtraDirs            = None
     IconKey              = None
     i18n                 = staticmethod(lambda x: x)
@@ -99,17 +100,16 @@ class Gnome(DefaultDe):
     Name                 = 'gnome'
     Version              = '2.32'
     ConfigPath           = '$HOME/.gnome2'
-    ConfigFile           = ''
-    ConfigType           = None
-    DefaultIconTheme     = 'oxygen'
-
+    ConfigType           = 'cmd'
+    DefaultIconTheme     = 'Gnome'
+    GetIconThemeCommand  = 'gconftool-2 --get /desktop/gnome/interface/icon_theme'
 
 class Gnome3(DefaultDe):
     Name                 = 'gnome3'
     SessionTypes         = ('gnome-shell')
     Version              = '3.0'
     ConfigPath           = '$HOME/.gnome2'
-    ConfigFile           = ''
-    ConfigType           = None
-    DefaultIconTheme     = 'oxygen'
+    ConfigType           = 'cmd'
+    DefaultIconTheme     = 'Gnome'
+    GetIconThemeCommand  = 'gconftool-2 --get /desktop/gnome/interface/icon_theme'
 

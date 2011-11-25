@@ -133,6 +133,13 @@ class Pds:
         elif self.session.ConfigType == 'env':
             value = getenv(key)
 
+        elif self.session.ConfigType == 'cmd':
+            if key == self.session.IconKey:
+                try:
+                    value = popen(self.session.GetIconThemeCommand).read().strip()
+                except:
+                    value = None
+
         return value or default
 
     def parse(self, fpath, ftype = 'ini', force = False):
